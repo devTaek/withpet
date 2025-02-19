@@ -36,17 +36,17 @@ authAxios.interceptors.request.use(
 // // 후처리
 authAxios.interceptors.response.use(
   (response: AxiosResponse) => {
-    // console.log(response)
     return response;
   }, 
   async (error) => {
     console.error("Error response:", error); // 에러 로그
 
     const originalRequest = error.config; // 기존 요청
-
+    
     // Access Token 만료 시
     if(error.response?.status === 401 && !originalRequest._retry) {
       console.log('Access token expired.')
+      console.log(error.response);
       originalRequest._retry = true;
 
       try {
@@ -76,29 +76,4 @@ authAxios.interceptors.response.use(
     return Promise.reject(error);
   }
 )
-
-// 후처리2
-// authAxios.interceptors.response.use(
-//   (response: AxiosResponse) => {
-//     return response;
-//   },
-//   async (error) => {
-//     console.log(error.config);
-//     if(error.response?.status === 401) {
-//       // window.location.href = '/unauthorized';
-//     } else if(error.response?.status === 404) {
-//       window.location.href = '/notFound';
-//     } else if(error.response && error.response?.status === 500) {
-//       const errorCode = error.response.data.errorCode;
-//       if(errorCode === 7001) {
-//         await tokenRefresh(authAxios);
-//         const accessToken = getItem('accessToken');
-//         error.config.headers['Authorization'] = `Bearer ${accessToken}`;
-
-//         return authAxios(error.config);
-//       }
-//     }
-//   }
-// )
-
 export default authAxios;

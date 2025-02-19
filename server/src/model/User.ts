@@ -110,34 +110,30 @@ export const updatePet = (
   userId: string,
   petName: string,
   petSpecies: string,
-  petAge: number,
   petBirth: number,
   petGender: string,
   petWeight: number,
   petFood: string,
   petActivity: string,
-  petImage: string,
   cb: (result: RowDataPacket | null) => void
 ) => {
   const sql = `UPDATE petDB SET
     user_id = ?,
     pet_name = ?,
     pet_species = ?,
-    pet_age = ?,
     pet_birth = ?,
     pet_gender = ?,
     pet_weight = ?,
     pet_food = ?,
-    pet_activity = ?,
-    pet_image = ?
+    pet_activity = ?
     WHERE user_id = ?;
   `;
 
-  conn.query(sql, [userId, petName, petSpecies, petAge, petBirth, petGender, petWeight, petFood, petActivity,petImage, userId],
+  conn.query(sql, [userId, petName, petSpecies, petBirth, petGender, petWeight, petFood, petActivity, userId],
     (err, result: ResultSetHeader) => {
       if(err)  {
         console.error("User. 펫정보 업데이트 중 오류:", err.message);
-        cb(null);
+        return cb(null);
       }
 
       // 업데이트 성공
@@ -146,13 +142,11 @@ export const updatePet = (
           user_id,
           pet_name,
           pet_species,
-          pet_age,
           pet_birth,
           pet_gender,
           pet_weight,
           pet_food,
-          pet_activity,
-          pet_image
+          pet_activity
           FROM petDB
           WHERE user_id = ?;
         `;

@@ -130,8 +130,8 @@ const updateUserInfo = (req, res) => {
 exports.updateUserInfo = updateUserInfo;
 /** pet 추가 업데이트  */
 const updatePetInfo = (req, res) => {
-    const { userId, name, species, age, birth, gender, weight, food, activity, image } = req.body;
-    (0, User_1.updatePet)(userId, name, species, age, birth, gender, weight, food, activity, image, (result) => {
+    const { userId, name, species, age, birth, gender, weight, food, activity } = req.body;
+    (0, User_1.updatePet)(userId, name, species, age, birth, gender, weight, food, activity, (result) => {
         if (!result) {
             return res.status(401).json({ message: "Invalid edit pet data" });
         }
@@ -147,7 +147,6 @@ const updatePetInfo = (req, res) => {
                     petWeight: weight,
                     petFood: food,
                     petActivity: activity,
-                    petImage: image,
                 };
                 // console.log('수정된 펫 정보: ', editPetInfo);
                 return res.send({ message: "펫 정보 수정 완료", editPetInfo });

@@ -7,7 +7,7 @@ interface ThemeSliceState {
 }
 
 const initialState: ThemeSliceState = {
-  mode: (sessionStorage.getItem("theme") as Themes) || 'theme0'
+  mode: (sessionStorage.getItem('theme') as Themes) || 'theme0'
 }
 
 const themeStateSlice = createSlice({

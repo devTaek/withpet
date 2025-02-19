@@ -14,7 +14,6 @@ dotenv.config();
 
 /** accessToken 검증 */
 export const verifyAccessToken = (req: Request, res: Response, next: NextFunction): void => {
-  // console.log('Authorization Header: ', req.headers['authorization'])
 
   const authHeader = req.headers['authorization'];
   if(!authHeader) {
@@ -32,7 +31,6 @@ export const verifyAccessToken = (req: Request, res: Response, next: NextFunctio
   try {
     // accessToken 검증
     const payload = jwt.verify(token!, process.env.ACCESS_SECRET as string);
-    // console.log('payload: ', payload);
 
     // 토큰이 유효하다면, payload를 req에 저장하고 다음으로 진행
     (req as any).user = payload;
@@ -46,7 +44,6 @@ export const verifyAccessToken = (req: Request, res: Response, next: NextFunctio
 export const refreshToken = (req: Request, res: Response): void => {
   try{
     const refreshToken = req.cookies?.refreshToken;
-    // console.log('refreshToken: ', refreshToken);
 
     if(!refreshToken) {
       res.status(401).json({message: "Refresh token is missing"});
@@ -80,7 +77,7 @@ export const userData = (req: Request, res: Response): void => {
     if(!result) {
       return res.status(401).json({ message: 'Invalid credentials'});
     }
-    // console.log(result)
+
     return res.json({userData: result});
   })
 }
@@ -136,57 +133,58 @@ export const updateUserInfo = (req: Request, res: Response): void => {
       userPhone: result.user_phone,
       userEmail: result.user_email,
       userAddress: result.user_address,
+      pet: [],
     }
     selectPet(userId, async (result: any) => {
       if(result) {
-        Object.assign(editUserInfo, {
-          petName: result.pet_name,
-          petSpecies: result.pet_species,
-          petBirth: result.pet_birth,
-          petGender: result.pet_gender,
-          petWeight: result.pet_weight,
-          petFood: result.pet_food,
-          petActivity: result.pet_activity,
-          petImage: result.pet_image,
-        })
-      }
-
+        editUserInfo.pet = result.map((pet: any) => ({
+          petName: pet.pet_name,
+          petSpecies: pet.pet_species,
+          petBirth: pet.pet_birth,
+          petGender: pet.pet_gender,
+          petWeight: pet.pet_weight,
+          petFood: pet.pet_food,
+          petActivity: pet.pet_activity,
+        }))
       return res.send(editUserInfo);
+    }
+
     })
   })
 }
 /** pet 추가 업데이트  */
 export const updatePetInfo = (req: Request, res: Response): void => {
-  const {userId, name, species, age, birth, gender, weight, food, activity, image} = req.body;
+  const {userId, name, species, birth, gender, weight, food, activity} = req.body;
 
-  updatePet(userId, name, species, age, birth, gender, weight, food, activity, image, (result: any) => {
+  updatePet(userId, name, species, birth, gender, weight, food, activity, (result: any) => {
     if(!result) {
       return res.status(401).json({message: "Invalid edit pet data"});
     }
 
-    const editPetInfo = {
-      userId,
-      petName: result.pet_name,
-      petSpecies: result.pet_species,
-      petAge: result.pet_age,
-      petBirth: result.pet_birth,
-      petGender: result.pet_gender,
-      petWeight: result.pet_weight,
-      petFood: result.pet_food,
-      petActivity: result.pet_activity,
-      petImage: result.pet_image,
+    const editUserInfo = {
+      pet: [{
+        petName: result.pet_name,
+        petSpecies: result.pet_species,
+        petBirth: result.pet_birth,
+        petGender: result.pet_gender,
+        petWeight: result.pet_weight,
+        petFood: result.pet_food,
+        petActivity: result.pet_activity,
+      }]
     };
     selectUser(userId, async (result: any) => {
       if(result) {
-        Object.assign(editPetInfo, {
+        Object.assign(editUserInfo, {
+          userId: result.user_id,
           userName: result.user_name,
           userPhone: result.user_phone,
           userEmail: result.user_email,
           userAddress: result.user_address,
         })
+
+        return res.send(editUserInfo);
       }
-      console.log(editPetInfo)
-      return res.send(editPetInfo);
+
     })
   })
 }

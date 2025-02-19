@@ -28,44 +28,18 @@ export interface UserData {
   userPhone: number;
   userEmail: string;
   userAddress: string;
-  petName: string;
-  petSpecies: string;
-  petBirth: number;
-  petGender: string;
-  petWeight: number;
-  petFood: string;
-  petActivity: string;
-  petAge: number;
-  petImage: string;
+  pet: PetInfo[];
 }
 
 // 애완견 정보
 export interface PetInfo {
-  petName: string;
-  petSpecies: string;
-  petBirth: number;
-  petGender: string;
-  petWeight: number;
-  petFood: string;
-  petActivity: string;
-  petAge: number;
-  petImage?: string;
+    index: number;
+    petName: string;
+    petSpecies: string;
+    petBirth: number;
+    petGender: string;
+    petWeight: number;
+    petFood: string;
+    petActivity: string;
+    petAge: number;
 }
-
-// 마이페이지
-// export interface MyPageInfo {
-//   userId: string;
-//   userName: string;
-//   userPhone: number;
-//   userEmail: string;
-//   userAddress: string;
-//   petName: string;
-//   petSpecies: string;
-//   petBirth: number;
-//   petGender: string;
-//   petWeight: number;
-//   petFood: string;
-//   petActivity: string;
-//   petAge: number;
-//   petImage?: string;
-// }

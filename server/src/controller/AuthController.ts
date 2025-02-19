@@ -30,6 +30,7 @@ export const login = (req: Request, res: Response): void => {
           userEmail: result.user_email,
           userAddress: result.user_address,
           userRegdate: result.regdate,
+          pet: [],
         }
 
         // access Token 발급
@@ -62,21 +63,21 @@ export const login = (req: Request, res: Response): void => {
         })
 
 
-        selectPet(userId, async function (result) {
-          const isPetState = !!result;
+        selectPet(userId, async (result: any) => {
+          const isPetState = result.length;
+
           if(result) {
-            Object.assign(user, {
-              petName: result.pet_name,
-              petSpecies: result.pet_species,
-              petBirth: result.pet_birth,
-              petGender: result.pet_gender,
-              petWeight: result.pet_weight,
-              petFood: result.pet_food,
-              petActivity: result.pet_activity,
-              petImage: result.pet_image,
-            })
+            user.pet = result.map((pet: any) => ({
+              petName: pet.pet_name,
+              petSpecies: pet.pet_species,
+              petBirth: pet.pet_birth,
+              petGender: pet.pet_gender,
+              petWeight: pet.pet_weight,
+              petFood: pet.pet_food,
+              petActivity: pet.pet_activity,
+            }))
           }
-          console.log(user)
+
           return res.send({ accessToken, user, isPetState });
         })
 

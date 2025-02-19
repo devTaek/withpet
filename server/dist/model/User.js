@@ -56,7 +56,7 @@ const updateUser = (id, name, phone, email, address, cb) => {
 };
 exports.updateUser = updateUser;
 // 펫정보 업데이트
-const updatePet = (userId, petName, petSpecies, petAge, petBirth, petGender, petWeight, petFood, petActivity, petImage, cb) => {
+const updatePet = (userId, petName, petSpecies, petAge, petBirth, petGender, petWeight, petFood, petActivity, cb) => {
     const sql = `UPDATE petDB SET
     user_id = ?,
     pet_name = ?,
@@ -66,11 +66,10 @@ const updatePet = (userId, petName, petSpecies, petAge, petBirth, petGender, pet
     pet_gender = ?,
     pet_weight = ?,
     pet_food = ?,
-    pet_activity = ?,
-    pet_petImage = ?
+    pet_activity = ?
     WHERE user_id = ?;
   `;
-    conn.query(sql, [userId, petName, petSpecies, petAge, petBirth, petGender, petWeight, petFood, petActivity, petImage, userId], (err, result) => {
+    conn.query(sql, [userId, petName, petSpecies, petAge, petBirth, petGender, petWeight, petFood, petActivity, userId], (err, result) => {
         if (err) {
             console.error("펫 정보 업데이트 오류:", err);
             cb(null); // 오류 발생 시 콜백에 null 전달

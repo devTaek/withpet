@@ -1,8 +1,8 @@
-import { PetInfo, UserData } from "../interfaces/user";
+import { UserData } from "../interfaces/user";
 
 export interface AuthState {
   isAuthenticated: boolean,
-  isPetState: boolean,
+  isPetState: number,
   user: UserData | null
 }
 

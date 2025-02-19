@@ -28,14 +28,13 @@ export const select = (
  */
 export const selectPet = (
   userId: string,
-  cb: (user: RowDataPacket | null) => void
+  cb: (user: RowDataPacket[] | null) => void
 ) => {
   const sql = `SELECT * FROM petDB WHERE user_id = ?`;
 
   conn.query<RowDataPacket[]>(sql, [userId], async (err, results) => {
     if(err) throw err;
-    const pet = results[0] || null;
-    cb(pet);
+    cb(results);
   })
 }
 
