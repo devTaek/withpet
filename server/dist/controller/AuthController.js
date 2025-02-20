@@ -23,7 +23,7 @@ const login = (req, res) => {
     (0, Auth_1.select)(userId, function (result) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!result) {
-                return res.status(404).send({ message: "사용자 정보가 일치하지 않습니다." });
+                return res.status(404).send({ message: "사용자 정보를 찾을 수 없습니다." });
             }
             else {
                 try {
@@ -39,6 +39,7 @@ const login = (req, res) => {
                         userEmail: result.user_email,
                         userAddress: result.user_address,
                         userRegdate: result.regdate,
+                        pet: [],
                     };
                     // access Token 발급
                     const accessToken = jsonwebtoken_1.default.sign({
@@ -57,13 +58,21 @@ const login = (req, res) => {
                         secure: false, // http 사용 (https : true)
                         httpOnly: true, // 자바스크립트 접근 불가
                     });
-                    (0, Auth_1.selectPet)(userId, function (result) {
-                        return __awaiter(this, void 0, void 0, function* () {
-                            console.log(result);
-                            const existPetData = result;
-                            return res.send({ accessToken, user, existPetData });
-                        });
-                    });
+                    (0, Auth_1.selectPet)(userId, (result) => __awaiter(this, void 0, void 0, function* () {
+                        const isPetState = result.length;
+                        if (result) {
+                            user.pet = result.map((pet) => ({
+                                petName: pet.pet_name,
+                                petSpecies: pet.pet_species,
+                                petBirth: pet.pet_birth,
+                                petGender: pet.pet_gender,
+                                petWeight: pet.pet_weight,
+                                petFood: pet.pet_food,
+                                petActivity: pet.pet_activity,
+                            }));
+                        }
+                        return res.send({ accessToken, user, isPetState });
+                    }));
                 }
                 catch (error) {
                     console.log("비밀번호 bcrypt 및 토큰발급 오류", error);

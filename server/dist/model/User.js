@@ -39,29 +39,53 @@ const insertPet = (userId, name, species, age, birth, gender, weight, food, acti
 };
 exports.insertPet = insertPet;
 // 회원정보 수정
-const updateUser = (id, name, phone, email, address, cb) => {
+const updateUser = (userId, userName, userPhone, userEmail, userAddress, cb) => {
     const sql = `UPDATE userDB SET
+    user_id = ?,
     user_name = ?,
     user_phone = ?,
     user_email = ?,
     user_address = ?
     WHERE user_id = ?;
     `;
-    conn.query(sql, [name, phone, email, address, id], (err, result) => {
-        if (err)
-            throw console.log("User. 펫정보 추가 중 오류", err.message);
-        console.log('회원정보가 수정되었습니다.');
-        cb(result[0]);
+    conn.query(sql, [userId, userName, userPhone, userEmail, userAddress, userId], (err, result) => {
+        if (err) {
+            console.log("User. 사용자정보 업데이트 중 오류", err.message);
+            return cb(null);
+        }
+        ;
+        // 업데이트 성공
+        if (result.affectedRows > 0) {
+            const selectUser = `SELECT 
+        user_id,
+        user_name,
+        user_phone,
+        user_email,
+        user_address
+        FROM userDB
+        WHERE user_id = ?;
+      `;
+            conn.query(selectUser, [userId], (err, rows) => {
+                if (err) {
+                    console.error("User. 수정된 회원정보 조회 중 오류", err.message);
+                    return cb(null);
+                }
+                cb(rows[0]);
+            });
+        }
+        else {
+            console.log("변경된 내용이 없습니다.");
+            cb(null);
+        }
     });
 };
 exports.updateUser = updateUser;
 // 펫정보 업데이트
-const updatePet = (userId, petName, petSpecies, petAge, petBirth, petGender, petWeight, petFood, petActivity, cb) => {
+const updatePet = (userId, petName, petSpecies, petBirth, petGender, petWeight, petFood, petActivity, cb) => {
     const sql = `UPDATE petDB SET
     user_id = ?,
     pet_name = ?,
     pet_species = ?,
-    pet_age = ?,
     pet_birth = ?,
     pet_gender = ?,
     pet_weight = ?,
@@ -69,14 +93,36 @@ const updatePet = (userId, petName, petSpecies, petAge, petBirth, petGender, pet
     pet_activity = ?
     WHERE user_id = ?;
   `;
-    conn.query(sql, [userId, petName, petSpecies, petAge, petBirth, petGender, petWeight, petFood, petActivity, userId], (err, result) => {
+    conn.query(sql, [userId, petName, petSpecies, petBirth, petGender, petWeight, petFood, petActivity, userId], (err, result) => {
         if (err) {
-            console.error("펫 정보 업데이트 오류:", err);
-            cb(null); // 오류 발생 시 콜백에 null 전달
+            console.error("User. 펫정보 업데이트 중 오류:", err.message);
+            return cb(null);
+        }
+        // 업데이트 성공
+        if (result.affectedRows > 0) {
+            const selectPet = `SELECT
+          user_id,
+          pet_name,
+          pet_species,
+          pet_birth,
+          pet_gender,
+          pet_weight,
+          pet_food,
+          pet_activity
+          FROM petDB
+          WHERE user_id = ?;
+        `;
+            conn.query(selectPet, [userId], (err, rows) => {
+                if (err) {
+                    console.error("User. 수정된 펫정보 조회 중 오류", err.message);
+                    return cb(null);
+                }
+                cb(rows[0]);
+            });
         }
         else {
-            console.log("펫 정보가 수정되었습니다.");
-            cb(result);
+            console.log("변경된 내용이 없습니다.");
+            cb(null);
         }
     });
 };
@@ -92,9 +138,11 @@ const mypageData = (userId, cb) => {
   WHERE userDB.user_id = ?
   `;
     conn.query(sql, [userId], (err, result) => {
-        if (err)
-            throw err;
-        cb(result);
+        if (err) {
+            console.error("mypageData. 데이터 조회 중 오류", err.message);
+            return cb(null); // 오류 발생 시 null 반환
+        }
+        cb(result); // 조회된 데이터 반환
     });
 };
 exports.mypageData = mypageData;

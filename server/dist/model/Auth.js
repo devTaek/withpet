@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.selectPet = exports.select = void 0;
+exports.selectUser = exports.selectPet = exports.select = void 0;
 const mysql2_1 = __importDefault(require("mysql2"));
 const conn = mysql2_1.default.createPool({
     host: 'localhost',
@@ -21,6 +21,8 @@ const conn = mysql2_1.default.createPool({
     database: 'WITHPET',
 });
 // 회원정보 찾기
+// user : userId에 매칭된 행
+// cb(user) : 콜백함수에 user(펫정보)를 전달
 const select = (userId, cb) => {
     const sql = `SELECT * FROM userDB WHERE user_id = ? LIMIT 1`;
     conn.query(sql, [userId], (err, results) => __awaiter(void 0, void 0, void 0, function* () {
@@ -40,8 +42,17 @@ const selectPet = (userId, cb) => {
     conn.query(sql, [userId], (err, results) => __awaiter(void 0, void 0, void 0, function* () {
         if (err)
             throw err;
-        const pet = results[0] || null;
-        cb(pet);
+        cb(results);
     }));
 };
 exports.selectPet = selectPet;
+const selectUser = (userId, cb) => {
+    const sql = `SELECT * FROM userDB WHERE user_id = ?`;
+    conn.query(sql, [userId], (err, results) => __awaiter(void 0, void 0, void 0, function* () {
+        if (err)
+            throw err;
+        const user = results[0] || null;
+        cb(user);
+    }));
+};
+exports.selectUser = selectUser;

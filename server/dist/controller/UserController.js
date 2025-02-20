@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -8,12 +17,12 @@ const User_1 = require("../model/User");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const Auth_1 = require("../model/Auth");
 dotenv_1.default.config();
 // master ID
 // 정태균 / test
 /** accessToken 검증 */
 const verifyAccessToken = (req, res, next) => {
-    console.log('Authorization Header: ', req.headers['authorization']);
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
         res.status(403).json({ message: "No authorization header provided!" }); // return 에러
@@ -22,11 +31,11 @@ const verifyAccessToken = (req, res, next) => {
     // Bearer <accessToken>에서 accessToken 추출
     const token = authHeader === null || authHeader === void 0 ? void 0 : authHeader.split(' ')[1];
     if (!token) {
-        res.status(403).json({ message: "Token missing.." });
+        res.status(403).json({ message: "authHeader?.split: Token missing.." });
     }
     try {
         // accessToken 검증
-        const payload = jsonwebtoken_1.default.verify(token, process.env.ACCESS_TOKEN);
+        const payload = jsonwebtoken_1.default.verify(token, process.env.ACCESS_SECRET);
         // 토큰이 유효하다면, payload를 req에 저장하고 다음으로 진행
         req.user = payload;
         next();
@@ -41,12 +50,12 @@ exports.verifyAccessToken = verifyAccessToken;
 const refreshToken = (req, res) => {
     var _a;
     try {
-        const refreshToken = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.refreshToken; // ? 넣는이유
+        const refreshToken = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.refreshToken;
         if (!refreshToken) {
             res.status(401).json({ message: "Refresh token is missing" });
         }
         try {
-            const payload = jsonwebtoken_1.default.verify(refreshToken, process.env.REFRESH_TOKEN);
+            const payload = jsonwebtoken_1.default.verify(refreshToken, process.env.REFRESH_SECRET);
             const newAccessToken = jsonwebtoken_1.default.sign({ userId: payload.userId }, process.env.ACCESS_SECRET, { expiresIn: "1h" });
             res.json({ accessToken: newAccessToken });
         }
@@ -67,7 +76,6 @@ const userData = (req, res) => {
         if (!result) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
-        // console.log(result)
         return res.json({ userData: result });
     });
 };
@@ -104,58 +112,65 @@ exports.registerPetInfo = registerPetInfo;
 /** 회원정보 업데이트 (회원정보 수정) */
 const updateUserInfo = (req, res) => {
     const { userId, name, phone, email, address } = req.body;
-    (0, User_1.updateUser)(name, phone, email, address, userId, (result) => {
+    (0, User_1.updateUser)(userId, name, phone, email, address, (result) => {
         if (!result) {
-            return res.status(401).json({ message: "Invalid edit data" });
+            return res.status(401).json({ message: "회원정보 수정 실패!" });
         }
-        else {
-            try {
-                const editUserInfo = {
-                    userId,
-                    userName: result.name,
-                    userPhone: result.phone,
-                    userEmail: result.email,
-                    userAddress: result.address,
-                };
-                console.log(editUserInfo);
-                // return res.send({editUserInfo});
+        const editUserInfo = {
+            userId,
+            userName: result.user_name,
+            userPhone: result.user_phone,
+            userEmail: result.user_email,
+            userAddress: result.user_address,
+            pet: [],
+        };
+        (0, Auth_1.selectPet)(userId, (result) => __awaiter(void 0, void 0, void 0, function* () {
+            if (result) {
+                editUserInfo.pet = result.map((pet) => ({
+                    petName: pet.pet_name,
+                    petSpecies: pet.pet_species,
+                    petBirth: pet.pet_birth,
+                    petGender: pet.pet_gender,
+                    petWeight: pet.pet_weight,
+                    petFood: pet.pet_food,
+                    petActivity: pet.pet_activity,
+                }));
+                return res.send(editUserInfo);
             }
-            catch (error) {
-                console.error("회원정보 수정 오류", error);
-                res.status(500).json(error);
-            }
-        }
+        }));
     });
 };
 exports.updateUserInfo = updateUserInfo;
 /** pet 추가 업데이트  */
 const updatePetInfo = (req, res) => {
-    const { userId, name, species, age, birth, gender, weight, food, activity } = req.body;
-    (0, User_1.updatePet)(userId, name, species, age, birth, gender, weight, food, activity, (result) => {
+    const { userId, name, species, birth, gender, weight, food, activity } = req.body;
+    (0, User_1.updatePet)(userId, name, species, birth, gender, weight, food, activity, (result) => {
         if (!result) {
             return res.status(401).json({ message: "Invalid edit pet data" });
         }
-        else {
-            try {
-                const editPetInfo = {
-                    userId,
-                    petName: name,
-                    petSpecies: species,
-                    petAge: age,
-                    petBirth: birth,
-                    petGender: gender,
-                    petWeight: weight,
-                    petFood: food,
-                    petActivity: activity,
-                };
-                // console.log('수정된 펫 정보: ', editPetInfo);
-                return res.send({ message: "펫 정보 수정 완료", editPetInfo });
+        const editUserInfo = {
+            pet: [{
+                    petName: result.pet_name,
+                    petSpecies: result.pet_species,
+                    petBirth: result.pet_birth,
+                    petGender: result.pet_gender,
+                    petWeight: result.pet_weight,
+                    petFood: result.pet_food,
+                    petActivity: result.pet_activity,
+                }]
+        };
+        (0, Auth_1.selectUser)(userId, (result) => __awaiter(void 0, void 0, void 0, function* () {
+            if (result) {
+                Object.assign(editUserInfo, {
+                    userId: result.user_id,
+                    userName: result.user_name,
+                    userPhone: result.user_phone,
+                    userEmail: result.user_email,
+                    userAddress: result.user_address,
+                });
+                return res.send(editUserInfo);
             }
-            catch (error) {
-                console.error("펫 수정 오류", error);
-                res.status(500).json({ message: "updatePetInfo. 펫 정보 수정 오류", error });
-            }
-        }
+        }));
     });
 };
 exports.updatePetInfo = updatePetInfo;

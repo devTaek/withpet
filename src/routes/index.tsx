@@ -8,7 +8,6 @@ import Home from '../pages/Home'
 import MyPage from '../pages/MyPage'
 
 import PrivateRoute from './PrivateRoute'
-import AddFeed from '../components/specific/AddFeed'
 
 
 function Router () {
@@ -25,7 +24,6 @@ function Router () {
             {/* 인증필요 */}
             <Route element={<PrivateRoute />}>
               <Route path='/mypage/:userId' element={<MyPage />} />
-              <Route path='/petstar/:userId' element={<AddFeed />} />
             </Route>
 
           </Route>

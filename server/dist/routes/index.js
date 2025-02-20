@@ -31,13 +31,13 @@ const router = (0, express_1.Router)();
 router.post('/login', AuthContrller.login);
 router.post('/logout', AuthContrller.logout);
 // 토큰
-router.post('/access-token', UserController.verifyAccessToken);
+router.get('/access-token', UserController.verifyAccessToken);
 router.get('/refresh-token', UserController.refreshToken);
 /* 사용자 정보 */
-// router.get('/user/:userId', UserController.userData);
 router.post('/register', UserController.register);
-router.post('/register-pet', UserController.registerPetInfo);
-router.patch('/update-user', UserController.updateUserInfo);
-router.patch('/update-pet', UserController.updatePetInfo);
-router.delete('/delete', UserController.deleteUser);
+router.get('/user/:userId', UserController.verifyAccessToken, UserController.userData);
+router.post('/register-pet', UserController.verifyAccessToken, UserController.registerPetInfo);
+router.patch('/update-user', UserController.verifyAccessToken, UserController.updateUserInfo);
+router.patch('/update-pet', UserController.verifyAccessToken, UserController.updatePetInfo);
+router.delete('/delete', UserController.verifyAccessToken, UserController.deleteUser);
 exports.default = router;
