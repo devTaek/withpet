@@ -193,5 +193,5 @@ export const updatePetInfo = (req: Request, res: Response): void => {
 
 /** 회원 탈퇴 (회원정보 삭제) */
 export const deleteUser = (req: Request, res: Response): void => {
-  const id = req.body;
+  // const id = req.body;
 }
