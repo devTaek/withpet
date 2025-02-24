@@ -15,11 +15,11 @@ router.get('/refresh-token', UserController.refreshToken)
 /* 사용자 정보 */
 router.post('/register', UserController.register);
 
-router.get('/user/:userId', UserController.verifyAccessToken, UserController.userData)
-router.post('/register-pet', UserController.verifyAccessToken, UserController.registerPetInfo)
+router.get('/user/:userId', UserController.verifyAccessToken)
+router.post('/register-pet', UserController.verifyAccessToken, UserController.registerPet)
 
-router.patch('/update-user', UserController.verifyAccessToken, UserController.updateUserInfo);
-router.patch('/update-pet', UserController.verifyAccessToken, UserController.updatePetInfo);
+router.patch('/update-user', UserController.verifyAccessToken, UserController.updateUser);
+router.patch('/update-pet', UserController.verifyAccessToken, UserController.updatePet);
 
 router.delete('/delete', UserController.verifyAccessToken, UserController.deleteUser)
 

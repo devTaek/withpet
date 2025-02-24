@@ -6,6 +6,7 @@ import authAxios from "../../utils/authAxios";
 
 import { useForm } from "react-hook-form"; 
 import { LoginFormData } from "../../types/interfaces/user";
+import { userActions } from '../../redux/slice/user';
 
 const Login = (
   {setShowComponent} : {setShowComponent: React.Dispatch<React.SetStateAction<boolean>>}
@@ -24,7 +25,8 @@ const Login = (
 
       const { accessToken, user, isPetState } = response.data;
 
-      dispatch(authActions.login({ accessToken: accessToken, user, isPetState }));
+      dispatch(authActions.login({ accessToken: accessToken, isPetState }));
+      dispatch(userActions.getUser({user: user}));
     } catch(error) {
       if(axios.isAxiosError(error) && error.response) {
         const status = error.response.status;

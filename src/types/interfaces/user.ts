@@ -33,7 +33,7 @@ export interface UserData {
 
 // 애완견 정보
 export interface PetInfo {
-    index: number;
+    petId?: number;
     petName: string;
     petSpecies: string;
     petBirth: number;

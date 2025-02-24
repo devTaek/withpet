@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updatePetInfo = exports.updateUserInfo = exports.registerPetInfo = exports.register = exports.userData = exports.refreshToken = exports.verifyAccessToken = void 0;
+exports.deleteUser = exports.updatePet = exports.updateUser = exports.registerPet = exports.register = exports.userData = exports.refreshToken = exports.verifyAccessToken = void 0;
 const User_1 = require("../model/User");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -48,15 +48,16 @@ const verifyAccessToken = (req, res, next) => {
 exports.verifyAccessToken = verifyAccessToken;
 /** accessToken 검증 후 새로운 accessToken 발급 */
 const refreshToken = (req, res) => {
-    var _a;
     try {
-        const refreshToken = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a.refreshToken;
+        const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) {
             res.status(401).json({ message: "Refresh token is missing" });
         }
         try {
             const payload = jsonwebtoken_1.default.verify(refreshToken, process.env.REFRESH_SECRET);
-            const newAccessToken = jsonwebtoken_1.default.sign({ userId: payload.userId }, process.env.ACCESS_SECRET, { expiresIn: "1h" });
+            const newAccessToken = jsonwebtoken_1.default.sign({ userId: payload.userId,
+                userName: payload.userName,
+            }, process.env.ACCESS_SECRET, { expiresIn: "1h" });
             res.json({ accessToken: newAccessToken });
         }
         catch (error) {
@@ -99,20 +100,30 @@ const register = (req, res) => {
 };
 exports.register = register;
 /* pet 정보 추가 */
-const registerPetInfo = (req, res) => {
+const registerPet = (req, res) => {
     const { userId, name, species, age, birth, gender, weight, food, activity } = req.body;
     (0, User_1.insertPet)(userId, name, species, age, birth, gender, weight, food, activity, (result) => {
         if (!result) {
             return res.status(401).json({ message: 'UserController. pet 정보 추가 오류', success: false });
         }
-        return res.send({ success: true });
+        const addPetInfo = {
+            petId: result.id,
+            petName: result.pet_name,
+            petSpecies: result.pet_species,
+            petBirth: result.pet_birth,
+            petGender: result.pet_gender,
+            petWeight: result.pet_weight,
+            petFood: result.pet_food,
+            petActivity: result.pet_activity,
+        };
+        return res.json({ success: true, addPet: addPetInfo });
     });
 };
-exports.registerPetInfo = registerPetInfo;
+exports.registerPet = registerPet;
 /** 회원정보 업데이트 (회원정보 수정) */
-const updateUserInfo = (req, res) => {
+const updateUser = (req, res) => {
     const { userId, name, phone, email, address } = req.body;
-    (0, User_1.updateUser)(userId, name, phone, email, address, (result) => {
+    (0, User_1.updateUserInfo)(userId, name, phone, email, address, (result) => {
         if (!result) {
             return res.status(401).json({ message: "회원정보 수정 실패!" });
         }
@@ -140,42 +151,32 @@ const updateUserInfo = (req, res) => {
         }));
     });
 };
-exports.updateUserInfo = updateUserInfo;
+exports.updateUser = updateUser;
 /** pet 추가 업데이트  */
-const updatePetInfo = (req, res) => {
-    const { userId, name, species, birth, gender, weight, food, activity } = req.body;
-    (0, User_1.updatePet)(userId, name, species, birth, gender, weight, food, activity, (result) => {
+const updatePet = (req, res) => {
+    const { userId, petId, name, species, birth, gender, weight, food, activity } = req.body;
+    console.log(petId);
+    (0, User_1.updatePetInfo)(userId, petId, name, species, birth, gender, weight, food, activity, (result) => {
         if (!result) {
             return res.status(401).json({ message: "Invalid edit pet data" });
         }
-        const editUserInfo = {
-            pet: [{
-                    petName: result.pet_name,
-                    petSpecies: result.pet_species,
-                    petBirth: result.pet_birth,
-                    petGender: result.pet_gender,
-                    petWeight: result.pet_weight,
-                    petFood: result.pet_food,
-                    petActivity: result.pet_activity,
-                }]
+        const editPetInfo = {
+            petName: result.pet_name,
+            petId: result.id,
+            petSpecies: result.pet_species,
+            petBirth: result.pet_birth,
+            petGender: result.pet_gender,
+            petWeight: result.pet_weight,
+            petFood: result.pet_food,
+            petActivity: result.pet_activity,
         };
-        (0, Auth_1.selectUser)(userId, (result) => __awaiter(void 0, void 0, void 0, function* () {
-            if (result) {
-                Object.assign(editUserInfo, {
-                    userId: result.user_id,
-                    userName: result.user_name,
-                    userPhone: result.user_phone,
-                    userEmail: result.user_email,
-                    userAddress: result.user_address,
-                });
-                return res.send(editUserInfo);
-            }
-        }));
+        console.log(editPetInfo);
+        return res.json({ success: true, updatePet: editPetInfo });
     });
 };
-exports.updatePetInfo = updatePetInfo;
+exports.updatePet = updatePet;
 /** 회원 탈퇴 (회원정보 삭제) */
 const deleteUser = (req, res) => {
-    const id = req.body;
+    // const id = req.body;
 };
 exports.deleteUser = deleteUser;

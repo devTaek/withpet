@@ -7,24 +7,23 @@ import { setItem } from "../../utils/storage";
 const initialAuthState: AuthState = {
   isAuthenticated: !!localStorage.getItem('accessToken'), // 토큰 유무로 초기화
   isPetState: Number(localStorage.getItem('isPetState')),
-  user: JSON.parse(localStorage.getItem('user') || 'null'),
 }
 const authStateSlice = createSlice({
   name: 'auth',
   initialState: initialAuthState,
   reducers: {
-    login(state, action: PayloadAction<{ accessToken: string; isPetState: number; user: UserData;}>) {
+    login(state, action: PayloadAction<{ accessToken: string; isPetState: number; }>) {
       state.isAuthenticated = !!action.payload.accessToken;
       state.isPetState = action.payload.isPetState
-      state.user = action.payload.user;
 
       setItem('accessToken', action.payload.accessToken);
       setItem('isPetState', action.payload.isPetState);
-      setItem('user', action.payload.user);
     },
 
     logout(state) {
       state.isAuthenticated = false;
+      state.isPetState = 0;  // 이전 petState 초기화
+      
       localStorage.removeItem('accessToken');
       localStorage.removeItem('user');
       localStorage.removeItem('isPetState');

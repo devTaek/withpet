@@ -8,7 +8,6 @@ import { IoMdClose } from "react-icons/io";
 import authAxios from '../../../utils/authAxios';
 import { PetInfo } from '../../../types/interfaces/user';
 import { userActions } from '../../../redux/slice/user';
-import { authActions } from '../../../redux/slice/auth';
 interface EditPetInfoProps {
   setIsEditPet: Dispatch<SetStateAction<{mode: 'edit' | 'add' | ''}>>;
   pet: PetInfo | null;
@@ -25,9 +24,9 @@ const EditPet: React.FC<EditPetInfoProps> = ({setIsEditPet, pet}) => {
   const onSubmit = async (data: PetInfo) => {
     let inputData = {
       userId: userId,
+      petId: pet?.petId,
       name: data.petName,
       species: data.petSpecies,
-      age: data.petAge,
       birth: data.petBirth,
       gender: data.petGender,
       weight: data.petWeight,
@@ -37,16 +36,17 @@ const EditPet: React.FC<EditPetInfoProps> = ({setIsEditPet, pet}) => {
 
       try {
         const response = await authAxios.patch('/update-pet', inputData)
-
-        alert(response.data.message || "수정 완료")
-        console.log(response.data);
-        dispatch(userActions.updateUser({user: response.data}));
-        setIsEditPet({mode: ''});
+        if(response.data.success) {
+          console.log(response.data.updatePet);
+          dispatch(userActions.updatePet({pet: response.data.updatePet}));
+          setIsEditPet({mode: ''});
+        } else {
+          alert("수정 실패");
+        }
       } catch(error: any) {
         console.error(error);
         alert(error.response?.data?.message || "수정에 실패했습니다.");
       }
- 
 
   }
   return (

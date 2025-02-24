@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { insert, insertPet, mypageData, updateUser, updatePet } from '../model/User'
+import { insert, insertPet, updateUserInfo, updatePetInfo } from '../model/User'
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv'
@@ -43,7 +43,7 @@ export const verifyAccessToken = (req: Request, res: Response, next: NextFunctio
 /** accessToken 검증 후 새로운 accessToken 발급 */
 export const refreshToken = (req: Request, res: Response): void => {
   try{
-    const refreshToken = req.cookies?.refreshToken;
+    const refreshToken = req.cookies.refreshToken;
 
     if(!refreshToken) {
       res.status(401).json({message: "Refresh token is missing"});
@@ -52,7 +52,9 @@ export const refreshToken = (req: Request, res: Response): void => {
     try {
       const payload = jwt.verify(refreshToken, process.env.REFRESH_SECRET as string)
       const newAccessToken = jwt.sign(
-        { userId: (payload as any).userId },
+        { userId: (payload as any).userId,
+          userName: (payload as any).userName,
+         },
         process.env.ACCESS_SECRET as string,
         { expiresIn: "1h" }
       )
@@ -66,20 +68,6 @@ export const refreshToken = (req: Request, res: Response): void => {
   } catch(err) {
     res.status(500).json(err)
   }
-}
-
-
-/** 마이페지이(user + pet) */
-export const userData = (req: Request, res: Response): void => {
-  const {userId} = req.params;
-
-  mypageData(userId, (result: any) => {
-    if(!result) {
-      return res.status(401).json({ message: 'Invalid credentials'});
-    }
-
-    return res.json({userData: result});
-  })
 }
 
 
@@ -104,26 +92,39 @@ export const register = (req: Request, res: Response): void => {
   })
 
 }
-/* pet 정보 추가 */
-export const registerPetInfo = (req: Request, res: Response): void => {
-  const {userId, name, species, age, birth, gender, weight, food, activity} = req.body;
 
-  insertPet( userId, name, species, age, birth, gender, weight, food, activity, (result: boolean) => {
+/* pet 정보 추가 */
+export const registerPet = (req: Request, res: Response): void => {
+  const {userId, name, species, birth, gender, weight, food, activity} = req.body;
+
+  insertPet( userId, name, species, birth, gender, weight, food, activity, (result: any) => {
+
     if(!result) {
       return res.status(401).json({message: 'UserController. pet 정보 추가 오류', success: false})
     }
 
-    return res.send({ success: true })
+    const addPetInfo = {
+        petId: result.id,
+        petName: result.pet_name,
+        petSpecies: result.pet_species,
+        petBirth: result.pet_birth,
+        petGender: result.pet_gender,
+        petWeight: result.pet_weight,
+        petFood: result.pet_food,
+        petActivity: result.pet_activity,
+    };
+
+    return res.json({success: true, addPet: addPetInfo});
   })
 }
 
 
 
 /** 회원정보 업데이트 (회원정보 수정) */
-export const updateUserInfo = (req: Request, res: Response): void => {
+export const updateUser = (req: Request, res: Response): void => {
   const {userId, name, phone, email, address} = req.body;
 
-  updateUser(userId, name, phone, email, address, (result: any) => {
+  updateUserInfo(userId, name, phone, email, address, (result: any) => {
     if(!result) {
       return res.status(401).json({message: "회원정보 수정 실패!"});
     }
@@ -153,39 +154,26 @@ export const updateUserInfo = (req: Request, res: Response): void => {
   })
 }
 /** pet 추가 업데이트  */
-export const updatePetInfo = (req: Request, res: Response): void => {
-  const {userId, name, species, birth, gender, weight, food, activity} = req.body;
-
-  updatePet(userId, name, species, birth, gender, weight, food, activity, (result: any) => {
+export const updatePet = (req: Request, res: Response): void => {
+  const {userId, petId, name, species, birth, gender, weight, food, activity} = req.body;
+  console.log(petId);
+  updatePetInfo(userId, petId, name, species, birth, gender, weight, food, activity, (result: any) => {
     if(!result) {
       return res.status(401).json({message: "Invalid edit pet data"});
     }
 
-    const editUserInfo = {
-      pet: [{
+    const editPetInfo = {
         petName: result.pet_name,
+        petId: result.id,
         petSpecies: result.pet_species,
         petBirth: result.pet_birth,
         petGender: result.pet_gender,
         petWeight: result.pet_weight,
         petFood: result.pet_food,
         petActivity: result.pet_activity,
-      }]
     };
-    selectUser(userId, async (result: any) => {
-      if(result) {
-        Object.assign(editUserInfo, {
-          userId: result.user_id,
-          userName: result.user_name,
-          userPhone: result.user_phone,
-          userEmail: result.user_email,
-          userAddress: result.user_address,
-        })
-
-        return res.send(editUserInfo);
-      }
-
-    })
+    console.log(editPetInfo);
+    return res.json({success: true, updatePet: editPetInfo});
   })
 }
 

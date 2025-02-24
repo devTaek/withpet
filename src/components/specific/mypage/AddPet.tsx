@@ -8,7 +8,6 @@ import { IoMdClose } from "react-icons/io";
 import authAxios from '../../../utils/authAxios';
 import { PetInfo } from '../../../types/interfaces/user';
 import { userActions } from '../../../redux/slice/user';
-import { authActions } from '../../../redux/slice/auth';
 interface EditPetInfoProps {
   setIsEditPet: Dispatch<SetStateAction<{mode: 'edit' | 'add' | ''}>>;
 }
@@ -26,28 +25,27 @@ const AddPet: React.FC<EditPetInfoProps> = ({setIsEditPet}) => {
       userId: userId,
       name: data.petName,
       species: data.petSpecies,
-      age: data.petAge,
       birth: data.petBirth,
       gender: data.petGender,
       weight: data.petWeight,
       food: data.petFood,
       activity: data.petActivity
     }
-
       try {
         const response = await authAxios.post('/register-pet', inputData)
 
+        let addPet = response.data.addPet;
+
         if(response.data.success) {
-          dispatch(authActions.setExistPetData(+1));
-          dispatch(userActions.updateUser({user: response.data}));
-          alert(response.data.message || "등록 완료")
+          dispatch(userActions.registerPet({pet: addPet}))
+
           setIsEditPet({mode: ''});
         } else {
           alert("등록 실패");
         }
       }catch(error: any) {
         console.error(error);
-        alert(error.respone?.data.message || "EditMyPage. 펫정보 등록실패.");
+        alert(error.response?.data.message || "EditMyPage. 펫정보 등록실패.");
       }
     
 
@@ -78,10 +76,10 @@ const AddPet: React.FC<EditPetInfoProps> = ({setIsEditPet}) => {
         </div>
         <div className="flex flex-col">
           <label className="font-semibold mb-1">성별</label>
-          <input
-            {...register('petGender')}
-            placeholder='성별'
-            className="border p-2 rounded-lg focus:outline-indigo-500"/>
+          <select {...register('petGender')} className="border p-2 rounded-lg focus:outline-indigo-500">
+            <option value="male">수컷</option>
+            <option value="female">암컷</option>
+          </select>
         </div>
         <div className="flex flex-col">
           <label className="font-semibold mb-1">몸무게</label>

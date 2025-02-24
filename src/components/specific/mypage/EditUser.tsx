@@ -30,7 +30,6 @@ export const EditUser: React.FC<EditUserInfoProps> = ({setIsEditingUser, user}) 
       })
 
       console.log("response", response.data);
-      // alert(response.data.message || "수정 완료")
 
       dispatch(userActions.updateUser({user: response.data}));
       setIsEditingUser(false)

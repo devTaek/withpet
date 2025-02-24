@@ -5,7 +5,7 @@ import { RootState } from '../redux/store/store';
 import { useState } from 'react';
 
 const Petstar = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state: RootState) => state.user.user);
   let userId = user?.userId;
   const Img = Object.values(Images.Star);
 

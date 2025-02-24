@@ -9,7 +9,7 @@ interface NavMenuProps {
 
 export function NavMenu({onClose} : NavMenuProps) {
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state: RootState) => state.user.user);
   let userId = user?.userId;
   
   const onClickPrivatePage = () => {
