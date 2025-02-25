@@ -37,15 +37,14 @@ const EditPet: React.FC<EditPetInfoProps> = ({setIsEditPet, pet}) => {
       try {
         const response = await authAxios.patch('/update-pet', inputData)
         if(response.data.success) {
-          console.log(response.data.updatePet);
           dispatch(userActions.updatePet({pet: response.data.updatePet}));
+
           setIsEditPet({mode: ''});
         } else {
-          alert("수정 실패");
+          console.log("EditPet. onSubmit: ", "수정 실패");
         }
       } catch(error: any) {
         console.error(error);
-        alert(error.response?.data?.message || "수정에 실패했습니다.");
       }
 
   }

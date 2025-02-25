@@ -1,57 +1,146 @@
-import { Link } from 'react-router-dom';
+import { IoMdAdd } from "react-icons/io";
 import Images from '../assets/img';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store/store';
-import { useState } from 'react';
+import { useState } from "react";
+import Modal from "../components/common/Modal";
+import FeedDetail from "../components/specific/petstar/FeedDetail";
+
+// 피드 데이터 타입 정의
+interface Feed {
+  id: number;
+  user_id: string;
+  title: string;
+  img: string[];
+  text: string;
+  comments: { feed_id: string; content: string }[];
+  like: number;
+}
+
+const DUMMY_FEED: Feed[] = [
+  {
+    id: 0,
+    user_id: '김철수',
+    title: '산책 다녀왔어요!',
+    img: [Images.Star.img1],
+    text: '오늘은 강아지랑 공원에서 신나게 뛰어놀았어요.',
+    comments: [],
+    like: 3,
+  },
+  {
+    id: 1,
+    user_id: '박영희',
+    title: '반려견 미용 완료',
+    img: [Images.Star.img2],
+    text: '우리 댕댕이 미용했는데 너무 귀엽지 않나요?',
+    comments: [],
+    like: 5,
+  },
+  {
+    id: 2,
+    user_id: '이준호',
+    title: '강아지와 첫 여행!',
+    img: [Images.Star.img3],
+    text: '반려견과 함께 바다를 다녀왔어요. 정말 행복한 시간!',
+    comments: [],
+    like: 10,
+  },
+  {
+    id: 3,
+    user_id: '최민정',
+    title: '새로운 장난감!',
+    img: [Images.Star.img4],
+    text: '강아지에게 새로운 장난감을 선물했는데 너무 좋아하네요.',
+    comments: [],
+    like: 2,
+  },
+  {
+    id: 0,
+    user_id: '김철수',
+    title: '산책 다녀왔어요!',
+    img: [Images.Star.img1],
+    text: '오늘은 강아지랑 공원에서 신나게 뛰어놀았어요.',
+    comments: [],
+    like: 3,
+  },
+  {
+    id: 1,
+    user_id: '박영희',
+    title: '반려견 미용 완료',
+    img: [Images.Star.img2],
+    text: '우리 댕댕이 미용했는데 너무 귀엽지 않나요?',
+    comments: [],
+    like: 5,
+  },
+  {
+    id: 2,
+    user_id: '이준호',
+    title: '강아지와 첫 여행!',
+    img: [Images.Star.img3],
+    text: '반려견과 함께 바다를 다녀왔어요. 정말 행복한 시간!',
+    comments: [],
+    like: 10,
+  },
+  {
+    id: 3,
+    user_id: '최민정',
+    title: '새로운 장난감!',
+    img: [Images.Star.img4],
+    text: '강아지에게 새로운 장난감을 선물했는데 너무 좋아하네요.',
+    comments: [],
+    like: 2,
+  },
+];
 
 const Petstar = () => {
-  const user = useSelector((state: RootState) => state.user.user);
-  let userId = user?.userId;
-  const Img = Object.values(Images.Star);
+  const [selectedFeed, setSelectedFeed] = useState<Feed | null>(null);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedImg, setSelectedImg] = useState<string | null>(null);
-  const openPost = (img: string): void => {
-    setSelectedImg(img)
-    setIsModalOpen(true);
+  const viewFeed = (feed: Feed) => {
+    setSelectedFeed(feed);
   };
-  const closePost = (): void => {
-    setIsModalOpen(false);
-    setSelectedImg(null)
-  }
+
+  const onCloseBtn = () => {
+    setSelectedFeed(null);
+  };
+
+
 
   return (
-    <div className='h-[calc(100vh-4rem)] mt-16 flex items-center justify-center p-10 gap-10'>
-
+    <div className="h-[calc(100vh-4rem)] mt-16 flex items-center justify-center p-10 gap-10">
       {/* 고정 이미지 */}
-      <div className='w-1/3 h-full hidden md:block'>
-        <img src={Images.Star.img8} alt="" className='w-full h-full max-h-screen'/>
+      <div className="w-1/3 h-full hidden md:block">
+        <img src={Images.Star.img8} alt="" className="w-full h-full max-h-screen" />
       </div>
 
       {/* 리스트 이미지 */}
-      <div className='relative w-2/3 h-full overflow-hidden'>
-        <div className='w-full font-bold text-4xl p-2 text-center'>PETSTAR</div>
-        <div className='h-full overflow-auto scrollbar-hide'>
-          <ul className='h-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'>
-            {Img &&
-              Img.map((img: string, id) => (
-                <li key={id} className='transform transition duration-300 ease-in-out hover:scale-105'>
-                  <img src={img} alt="" className='w-full h-full object-cover' onClick={() => openPost(img)}/>
-                  </li>
-              ))
-            }
+      <div className="relative w-2/3 h-full overflow-hidden">
+        <div className="w-full font-bold text-4xl p-2 text-center">PETSTAR</div>
+        <div className="h-full overflow-auto scrollbar-hide">
+          <ul className="h-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {DUMMY_FEED.map((feed) => (
+              <li key={feed.id} className="transform transition duration-300 ease-in-out hover:scale-105">
+                <img
+                  onClick={() => viewFeed(feed)}
+                  src={feed.img[0]}
+                  alt=""
+                  className="w-full h-full object-cover cursor-pointer"
+                />
+              </li>
+            ))}
           </ul>
-          <div id="observer"></div>
         </div>
-        <Link to={`/petstar/${userId}`}>
-          <button className='fixed bottom-10 right-10 w-16 h-16 bg-green-500 text-white text-4xl rounded-full flex items-center justify-center cursor-pointer'>
+
+        <button className="fixed bottom-10 right-10 w-16 h-16 bg-green-500 text-white text-4xl rounded-full flex items-center justify-center cursor-pointer">
+          <IoMdAdd />
         </button>
-        </Link>
-          +
       </div>
 
+      {/* 모달 */}
+      {selectedFeed && (
+        <Modal onCloseBtn={onCloseBtn}>
+          <FeedDetail feed={selectedFeed} />
+        </Modal>
+      )}
     </div>
-  )
-}
+  );
+};
 
-export default Petstar
+export default Petstar;

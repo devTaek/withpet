@@ -32,11 +32,7 @@ const userStateSlice = createSlice({
     },
     registerPet(state, action: PayloadAction<{pet: PetInfo}>) {
       const newPet = action.payload.pet;
-
       state.user.pet = [...state.user.pet, newPet]; // 새로운 pet 추가
-
-
-      console.log(state)
       setItem('user', state.user);
     },
 

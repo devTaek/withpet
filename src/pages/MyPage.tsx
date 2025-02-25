@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { TbMoodEdit } from "react-icons/tb";
 import { IoMdAdd, IoMdClose } from "react-icons/io";
-
 import { LiaUserEditSolid } from "react-icons/lia";
-import { getItem } from '../utils/storage';
-import EditUser from '../components/specific/mypage/EditUser';
-import EditPet from '../components/specific/mypage/EditPet';
 
+import { getItem } from '../utils/storage';
 import { PetInfo } from '../types/interfaces/user';
+
+
+import EditUser from '../components/specific/mypage/EditUser';
 import AddPet from '../components/specific/mypage/AddPet';
+import EditPet from '../components/specific/mypage/EditPet';
 
 const MyPage = () => {
   const user = getItem('user')

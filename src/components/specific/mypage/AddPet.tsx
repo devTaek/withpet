@@ -41,11 +41,10 @@ const AddPet: React.FC<EditPetInfoProps> = ({setIsEditPet}) => {
 
           setIsEditPet({mode: ''});
         } else {
-          alert("등록 실패");
+          console.log("AddPet. onSubmit: ", "등록 실패");
         }
       }catch(error: any) {
         console.error(error);
-        alert(error.response?.data.message || "EditMyPage. 펫정보 등록실패.");
       }
     
 

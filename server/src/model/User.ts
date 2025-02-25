@@ -1,4 +1,3 @@
-import { get } from 'http';
 import mysql, { RowDataPacket, ResultSetHeader } from 'mysql2'
 
 

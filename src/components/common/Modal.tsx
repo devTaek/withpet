@@ -12,7 +12,7 @@ export default function Modal(
   	// 블러 처리된 모달의 뒷 배경
     <div
       role="presentation"
-      className="fixed inset-0 z-50 flex h-full w-full items-center justify-center bg-gray-900 bg-opacity-30 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex h-full w-full items-center justify-center bg-gray-300 bg-opacity-20 backdrop-blur-sm animate-fade-in"
       onClick={onCloseBtn}
       aria-label="모달 뒷 배경"
     >

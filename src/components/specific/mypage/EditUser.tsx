@@ -14,9 +14,9 @@ interface EditUserInfoProps {
 }
 
 export const EditUser: React.FC<EditUserInfoProps> = ({setIsEditingUser, user}) => {
-  const {userId} = useParams();
+  const { userId } = useParams();
   const dispatch = useDispatch();
-  const { register, watch, handleSubmit, formState: { errors }} = useForm<UserData>();
+  const { register, handleSubmit } = useForm<UserData>();
 
   const onSubmit = async (data: UserData) => {
 
@@ -28,16 +28,11 @@ export const EditUser: React.FC<EditUserInfoProps> = ({setIsEditingUser, user}) 
         email: data.userEmail,
         address: data.userAddress,
       })
-
-      console.log("response", response.data);
-
       dispatch(userActions.updateUser({user: response.data}));
+      
       setIsEditingUser(false)
-
-
     } catch(error: any) {
       console.error(error);
-      alert(error.respone?.data.message || "수정에 실패했습니다.");
     }
   }
 

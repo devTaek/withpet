@@ -3,7 +3,7 @@ import { insert, insertPet, updateUserInfo, updatePetInfo } from '../model/User'
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv'
-import { selectPet, selectUser } from '../model/Auth';
+import { selectPet } from '../model/Auth';
 
 dotenv.config();
 
@@ -54,7 +54,7 @@ export const refreshToken = (req: Request, res: Response): void => {
       const newAccessToken = jwt.sign(
         { userId: (payload as any).userId,
           userName: (payload as any).userName,
-         },
+        },
         process.env.ACCESS_SECRET as string,
         { expiresIn: "1h" }
       )
@@ -156,7 +156,7 @@ export const updateUser = (req: Request, res: Response): void => {
 /** pet 추가 업데이트  */
 export const updatePet = (req: Request, res: Response): void => {
   const {userId, petId, name, species, birth, gender, weight, food, activity} = req.body;
-  console.log(petId);
+
   updatePetInfo(userId, petId, name, species, birth, gender, weight, food, activity, (result: any) => {
     if(!result) {
       return res.status(401).json({message: "Invalid edit pet data"});
@@ -172,7 +172,7 @@ export const updatePet = (req: Request, res: Response): void => {
         petFood: result.pet_food,
         petActivity: result.pet_activity,
     };
-    console.log(editPetInfo);
+
     return res.json({success: true, updatePet: editPetInfo});
   })
 }

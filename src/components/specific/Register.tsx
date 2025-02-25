@@ -18,11 +18,9 @@ const Register = () => {
         address: data.address,
         phoneNumber: data.phoneNumber,
       })
-      alert(response.data.message || '회원가입 성공');
 
     } catch(error: any) {
       console.error(error);
-      alert(error.response?.data.message || '회원가입에 실패했습니다.')
     }
   }
 
