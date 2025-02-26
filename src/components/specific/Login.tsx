@@ -23,10 +23,10 @@ const Login = (
         userPw: data.userPw,
       })
 
-      const { accessToken, user, isPetState } = response.data;
-
-      dispatch(authActions.login({ accessToken: accessToken, isPetState }));
-      dispatch(userActions.getUser({user: user}));
+      const { accessToken, user } = response.data;
+      console.log(user)
+      dispatch(authActions.login({ accessToken: accessToken }));
+      dispatch(userActions.getUser({ user: user }));
     } catch(error) {
       if(axios.isAxiosError(error) && error.response) {
         const status = error.response.status;

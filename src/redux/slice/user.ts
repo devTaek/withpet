@@ -2,11 +2,10 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { UserState } from '../../types/redux'
 import { PetInfo, UserData } from "../../types/interfaces/user";
 import { setItem } from "../../utils/storage";
-/** userSlice 초기값 */
+
 const initialUser: UserState = {
   user: JSON.parse(localStorage.getItem('user') || 'null'),
 }
-
 
 const userStateSlice = createSlice({
   name: 'user',
@@ -32,7 +31,7 @@ const userStateSlice = createSlice({
     },
     registerPet(state, action: PayloadAction<{pet: PetInfo}>) {
       const newPet = action.payload.pet;
-      state.user.pet = [...state.user.pet, newPet]; // 새로운 pet 추가
+      state.user.pet = [...state.user.pet, newPet];
       setItem('user', state.user);
     },
 

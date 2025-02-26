@@ -76,8 +76,8 @@ const AddPet: React.FC<EditPetInfoProps> = ({setIsEditPet}) => {
         <div className="flex flex-col">
           <label className="font-semibold mb-1">성별</label>
           <select {...register('petGender')} className="border p-2 rounded-lg focus:outline-indigo-500">
-            <option value="male">수컷</option>
-            <option value="female">암컷</option>
+            <option value="남자">남자</option>
+            <option value="여자">여자</option>
           </select>
         </div>
         <div className="flex flex-col">

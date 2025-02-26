@@ -64,10 +64,9 @@ export const login = (req: Request, res: Response): void => {
 
 
         selectPet(userId, async (result: any) => {
-          const isPetState = result.length;
-
           if(result) {
             user.pet = result.map((pet: any) => ({
+              petId: pet.id, 
               petName: pet.pet_name,
               petSpecies: pet.pet_species,
               petBirth: pet.pet_birth,
@@ -77,8 +76,8 @@ export const login = (req: Request, res: Response): void => {
               petActivity: pet.pet_activity,
             }))
           }
-
-          return res.send({ accessToken, user, isPetState });
+          console.log(user)
+          return res.send({ accessToken, user });
         })
 
       } catch(error) {

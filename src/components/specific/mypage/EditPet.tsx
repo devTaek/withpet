@@ -36,6 +36,7 @@ const EditPet: React.FC<EditPetInfoProps> = ({setIsEditPet, pet}) => {
 
       try {
         const response = await authAxios.patch('/update-pet', inputData)
+        console.log(response.data)
         if(response.data.success) {
           dispatch(userActions.updatePet({pet: response.data.updatePet}));
 

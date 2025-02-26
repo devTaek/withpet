@@ -12,7 +12,7 @@ export function NavMenu({onClose} : NavMenuProps) {
   const user = useSelector((state: RootState) => state.user.user);
   let userId = user?.userId;
   
-  const onClickPrivatePage = () => {
+  const privatePageBtn = () => {
     if(!userId) {
       toast.error('로그인이 필요합니다.', {
         position: 'top-center',
@@ -44,7 +44,7 @@ export function NavMenu({onClose} : NavMenuProps) {
             <li>
               <Link to="/petshop" className='hover:text-blue-500 transition-colors' onClick={onClose}>PETSHOP</Link>
             </li>
-            <li onClick={onClickPrivatePage}>
+            <li onClick={privatePageBtn}>
               <Link to={`/mypage/${userId}`} className='hover:text-blue-500 transition-colors' onClick={onClose}>MYPAGE</Link>
             </li>
           </ul>
