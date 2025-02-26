@@ -2,10 +2,10 @@ import { useState } from "react";
 
 interface Feed {
   id: number;
-  user_id: string;
+  pet_id: string;
   title: string;
   img: string[];
-  text: string;
+  content: string;
   comments: { feed_id: string; content: string }[];
   like: number;
 }
@@ -32,20 +32,11 @@ const FeedDetail = ({ feed }: FeedDetailProps) => {
     setNewComment("");
   };
 
-  // 이미지 슬라이드 이동
-  const nextImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % feed.img.length);
-  };
 
-  const prevImage = () => {
-    setCurrentImageIndex(
-      (prevIndex) => (prevIndex - 1 + feed.img.length) % feed.img.length
-    );
-  };
 
   return (
     <div className="bg-white p-4 rounded-lg shadow">
-      <div className="text-gray-700 font-semibold">{feed.user_id}</div>
+      <div className="text-gray-700 font-semibold">{feed.pet_id}</div>
       <h1 className="text-xl font-bold my-2">{feed.title}</h1>
 
       <div className="relative mb-3">
@@ -53,9 +44,9 @@ const FeedDetail = ({ feed }: FeedDetailProps) => {
         />
       </div>
 
-      <div className="text-gray-600">{feed.text}</div>
+      <div className="text-gray-600">{feed.content}</div>
       <br />
-      <div className="pt-4">
+      <div className="pt-4 border-t">
         <h2 className="text-lg font-semibold mb-2">댓글</h2>
 
         <ul className="space-y-2 mb-3 max-h-40 overflow-auto">

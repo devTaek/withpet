@@ -1,16 +1,20 @@
+import { useState } from "react";
+import { toast } from "react-toastify";
 import { IoMdAdd } from "react-icons/io";
 import Images from '../assets/img';
-import { useState } from "react";
 import Modal from "../components/common/Modal";
 import FeedDetail from "../components/specific/petstar/FeedDetail";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store/store";
+import AddFeed from "../components/specific/petstar/AddFeed";
 
 // 피드 데이터 타입 정의
 interface Feed {
   id: number;
-  user_id: string;
+  pet_id: string;
   title: string;
   img: string[];
-  text: string;
+  content: string;
   comments: { feed_id: string; content: string }[];
   like: number;
 }
@@ -18,73 +22,73 @@ interface Feed {
 const DUMMY_FEED: Feed[] = [
   {
     id: 0,
-    user_id: '김철수',
+    pet_id: '라떼',
     title: '산책 다녀왔어요!',
     img: [Images.Star.img1],
-    text: '오늘은 강아지랑 공원에서 신나게 뛰어놀았어요.',
+    content: '오늘은 강아지랑 공원에서 신나게 뛰어놀았어요.',
     comments: [],
     like: 3,
   },
   {
     id: 1,
-    user_id: '박영희',
+    pet_id: '썬더',
     title: '반려견 미용 완료',
     img: [Images.Star.img2],
-    text: '우리 댕댕이 미용했는데 너무 귀엽지 않나요?',
+    content: '우리 댕댕이 미용했는데 너무 귀엽지 않나요?',
     comments: [],
     like: 5,
   },
   {
     id: 2,
-    user_id: '이준호',
+    pet_id: '뭉치',
     title: '강아지와 첫 여행!',
     img: [Images.Star.img3],
-    text: '반려견과 함께 바다를 다녀왔어요. 정말 행복한 시간!',
+    content: '반려견과 함께 바다를 다녀왔어요. 정말 행복한 시간!',
     comments: [],
     like: 10,
   },
   {
     id: 3,
-    user_id: '최민정',
+    pet_id: '해피',
     title: '새로운 장난감!',
     img: [Images.Star.img4],
-    text: '강아지에게 새로운 장난감을 선물했는데 너무 좋아하네요.',
+    content: '강아지에게 새로운 장난감을 선물했는데 너무 좋아하네요.',
     comments: [],
     like: 2,
   },
   {
-    id: 0,
-    user_id: '김철수',
+    id: 4,
+    pet_id: '래미',
     title: '산책 다녀왔어요!',
     img: [Images.Star.img1],
-    text: '오늘은 강아지랑 공원에서 신나게 뛰어놀았어요.',
+    content: '오늘은 강아지랑 공원에서 신나게 뛰어놀았어요.',
     comments: [],
     like: 3,
   },
   {
-    id: 1,
-    user_id: '박영희',
+    id: 5,
+    pet_id: '라떼',
     title: '반려견 미용 완료',
     img: [Images.Star.img2],
-    text: '우리 댕댕이 미용했는데 너무 귀엽지 않나요?',
+    content: '우리 댕댕이 미용했는데 너무 귀엽지 않나요?',
     comments: [],
     like: 5,
   },
   {
-    id: 2,
-    user_id: '이준호',
+    id: 6,
+    pet_id: '해피',
     title: '강아지와 첫 여행!',
     img: [Images.Star.img3],
-    text: '반려견과 함께 바다를 다녀왔어요. 정말 행복한 시간!',
+    content: '반려견과 함께 바다를 다녀왔어요. 정말 행복한 시간!',
     comments: [],
     like: 10,
   },
   {
-    id: 3,
-    user_id: '최민정',
+    id: 7,
+    pet_id: '뭉치',
     title: '새로운 장난감!',
     img: [Images.Star.img4],
-    text: '강아지에게 새로운 장난감을 선물했는데 너무 좋아하네요.',
+    content: '강아지에게 새로운 장난감을 선물했는데 너무 좋아하네요.',
     comments: [],
     like: 2,
   },
@@ -92,13 +96,35 @@ const DUMMY_FEED: Feed[] = [
 
 const Petstar = () => {
   const [selectedFeed, setSelectedFeed] = useState<Feed | null>(null);
+  const [addFeed, setAddFeed] = useState(false);
+
+  const user = useSelector((state: RootState) => state.user.user)
+  let userId = user.userId;
+
+  const privatePageBtn = () => {
+      if(!userId) {
+        toast.error('로그인이 필요합니다.', {
+          position: 'top-center',
+          autoClose: 2000,
+          className: 'bg-red-600 text-white text-sm font-semibold py-2 px-4 rounded-md',
+        });
+      } else {
+        setAddFeed(true);
+      }
+      // onClose();
+    }
 
   const viewFeed = (feed: Feed) => {
     setSelectedFeed(feed);
   };
 
+  const addFeedBtn = () => {
+    setAddFeed(true);
+  }
+
   const onCloseBtn = () => {
     setSelectedFeed(null);
+    setAddFeed(false);
   };
 
 
@@ -128,11 +154,17 @@ const Petstar = () => {
           </ul>
         </div>
 
-        <button className="fixed bottom-10 right-10 w-16 h-16 bg-green-500 text-white text-4xl rounded-full flex items-center justify-center cursor-pointer">
+        <button className="fixed bottom-10 right-10 w-16 h-16 bg-green-500 text-white text-4xl rounded-full flex items-center justify-center cursor-pointer" onClick={privatePageBtn}>
           <IoMdAdd />
         </button>
       </div>
 
+      {/* 추가모달 */}
+      {addFeed && (
+        <Modal onCloseBtn={onCloseBtn}>
+          <AddFeed />
+        </Modal>
+      )}
       {/* 모달 */}
       {selectedFeed && (
         <Modal onCloseBtn={onCloseBtn}>

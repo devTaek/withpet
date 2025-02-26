@@ -1,0 +1,95 @@
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { RootState } from '../../../redux/store/store';
+
+const AddFeed = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+  let userId = user.userId;
+  let pets = user.pet.map((pet) => pet.petName);
+  const { register, handleSubmit, watch } = useForm();
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  const onSubmit = (data: any) => {
+    let inputData = {
+      userId: userId,
+      title: data.title,
+      contents: data.contents,
+      petId: data.petId || null,
+      img: data.img,
+    };
+  };
+
+  const avatar = watch('imgUrl');
+  useEffect(() => {
+    if (avatar && avatar.length > 0) {
+      const file = avatar[0];
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  }, [avatar]);
+
+  return (
+    <form 
+      onSubmit={handleSubmit(onSubmit)} 
+      className="flex flex-col bg-white p-6 rounded-xl shadow-lg border border-gray-200 w-full max-w-md mx-auto"
+    >
+      <select
+        className="border border-gray-300 p-3 rounded-md text-gray-700 font-semibold mb-4 focus:ring-2 focus:ring-blue-400"
+        {...register('petName', { required: true })}
+      >
+        {pets.map((pet, id) => (
+          <option key={id} value={pet}>
+            {pet}
+          </option>
+        ))}
+      </select>
+
+      <input
+        className="border border-gray-300 p-3 rounded-md text-gray-700 font-semibold mb-4 focus:ring-2 focus:ring-blue-400 placeholder:text-gray-400"
+        {...register('title', { required: true })}
+        placeholder="제목을 입력하세요"
+      />
+
+      <label className="relative w-full h-60 border border-gray-300 border-dashed p-4 rounded-lg mb-4 flex flex-col items-center justify-center cursor-pointer bg-gray-100 hover:bg-gray-300 transition">
+        {avatarPreview ? (
+          <img src={avatarPreview} alt="Preview" className="absolute w-full h-full object-contain rounded-lg" />
+        ) : (
+          <div className="flex flex-col items-center text-gray-500">
+            <svg
+              className="w-12 h-12 mb-2 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16v4a2 2 0 002 2h14a2 2 0 002-2v-4M16 8l-4-4m0 0L8 8m4-4v12"></path>
+            </svg>
+            <span>이미지를 선택하세요</span>
+          </div>
+        )}
+        <input
+          type="file"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          {...register('imgUrl')}
+          multiple
+        />
+      </label>
+
+      <textarea
+        className="border border-gray-300 p-3 rounded-md text-gray-700 font-semibold mb-4 focus:ring-2 focus:ring-blue-400 placeholder:text-gray-400 h-24"
+        {...register('contents', { required: true })}
+        placeholder="내용을 입력하세요"
+      />
+
+      <button 
+        type="submit" 
+        className="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition shadow-md hover:shadow-lg transform hover:scale-105"
+      >
+        게시하기
+      </button>
+    </form>
+  );
+};
+
+export default AddFeed;
