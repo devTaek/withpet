@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { insertFeed } from "../model/Feed";
 
 export const feed = (req: Request, res: Response, next: NextFunction) => {
   const {userId, title, contents, petName} = req.body;
@@ -7,6 +8,8 @@ export const feed = (req: Request, res: Response, next: NextFunction) => {
   if(images && Array.isArray(images)) {
     const imagePaths = images.map((image: any) => `/uploads/feeds/${image.filename}`); // 파일 경로 배열 생성
     
+    insertFeed(userId, title, contents, petName, imagePaths);
+
     res.json({
       success: true,
       addFeed: {
@@ -14,7 +17,7 @@ export const feed = (req: Request, res: Response, next: NextFunction) => {
         title,
         contents,
         petName,
-        images: imagePaths, // 이미지 경로를 배열로 응답
+        img: imagePaths, // 이미지 경로를 배열로 응답
       }
     })
   } else {
