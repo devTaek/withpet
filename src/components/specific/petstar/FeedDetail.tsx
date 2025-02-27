@@ -18,8 +18,6 @@ const FeedDetail = ({ feed }: FeedDetailProps) => {
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState(feed.comments);
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
   const addComment = () => {
     if (!newComment.trim()) return;
 

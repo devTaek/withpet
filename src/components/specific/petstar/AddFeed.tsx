@@ -1,30 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import { RootState } from '../../../redux/store/store';
+import axios from 'axios';
 
 const AddFeed = () => {
   const user = useSelector((state: RootState) => state.user.user);
   let userId = user.userId;
   let pets = user.pet.map((pet) => pet.petName);
-  const { register, handleSubmit, watch } = useForm();
+  const { register, handleSubmit, watch, formState:{errors} } = useForm();
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-  const onSubmit = (data: any) => {
-    let inputData = {
-      userId: userId,
-      title: data.title,
-      contents: data.contents,
-      petId: data.petId || null,
-      img: data.img,
-    };
+  const onSubmit = async (data: any) => {
+    const formData = new FormData();
+
+    formData.append("userId", (userId));
+    formData.append("title", data.title);
+    formData.append("contents", data.contents);
+    formData.append("petName", data.petName || "");
+
+    if(data.feedImg && data.feedImg.length > 0) {
+      Array.from(data.feedImg as FileList).forEach((file) => {
+        formData.append("feedImg", file);
+      })
+    }
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/petstar/add', formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+      console.log(response.data)
+      if(response.data.success) {
+        console.log("AddFeed. onSubmit: 응답 성공", response.data);
+      }
+    } catch(error) {
+      console.error("AddFeed. onSubmit: 요청 실패", error)
+    }
   };
 
-  const avatar = watch('imgUrl');
+  const avatar = watch('feedImg');
+
   useEffect(() => {
     if (avatar && avatar.length > 0) {
       const file = avatar[0];
       setAvatarPreview(URL.createObjectURL(file));
+    } else {
+      setAvatarPreview(null);
     }
   }, [avatar]);
 
@@ -49,6 +72,8 @@ const AddFeed = () => {
         {...register('title', { required: true })}
         placeholder="제목을 입력하세요"
       />
+      {errors.title && <span className="text-red-500 text-sm mb-4">제목을 입력하세요</span>} {/* 에러 메시지 표시 */}
+
 
       <label className="relative w-full h-60 border border-gray-300 border-dashed p-4 rounded-lg mb-4 flex flex-col items-center justify-center cursor-pointer bg-gray-100 hover:bg-gray-300 transition">
         {avatarPreview ? (
@@ -71,14 +96,16 @@ const AddFeed = () => {
         <input
           type="file"
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          {...register('imgUrl')}
+          {...register('feedImg', { required: true })}
           multiple
         />
       </label>
+      {errors.feedImg && <span className="text-red-500 text-sm mb-4">이미지를 선택하세요.</span>} {/* 에러 메시지 표시 */}
+
 
       <textarea
         className="border border-gray-300 p-3 rounded-md text-gray-700 font-semibold mb-4 focus:ring-2 focus:ring-blue-400 placeholder:text-gray-400 h-24"
-        {...register('contents', { required: true })}
+        {...register('contents')}
         placeholder="내용을 입력하세요"
       />
 

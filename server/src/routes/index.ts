@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import * as UserController from '../controller/UserController';
 import * as AuthContrller from '../controller/AuthController';
+import * as FeedController from '../controller/FeedController';
+
+import upload from '../middleware/multer';
 
 const router = Router();
 
@@ -22,5 +25,10 @@ router.patch('/update-user', UserController.verifyAccessToken, UserController.up
 router.patch('/update-pet', UserController.verifyAccessToken, UserController.updatePet);
 
 router.delete('/delete', UserController.verifyAccessToken, UserController.deleteUser)
+
+
+/* MyStar */
+router.post('/petstar/add', upload.array('feedImg'), FeedController.feed);
+
 
 export default router;
