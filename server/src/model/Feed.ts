@@ -7,6 +7,31 @@ const conn = mysql.createPool({
   database: `WITHPET`,
 })
 
+export const selectFeeds = (cb: (err: any, results: any) => void) => {
+  const sql = `
+    SELECT 
+      f.id,
+      f.user_id,
+      f.pet_name,
+      f.title,
+      f.contents,
+      i.img,
+      f.created_at
+    FROM feedDB AS f
+    JOIN feedImageDB AS i
+    ON f.id = i.feed_id
+    WHERE f.id = i.feed_id
+    `;
+
+conn.query(sql, (err, results) => {
+  if(err) {
+    console.error('Feeds 가져오기 실패:', err);
+    return;
+  }
+  cb(null, results);
+});
+}
+
 export const insertFeed = (
   userId: string,
   petName: string,
@@ -14,9 +39,9 @@ export const insertFeed = (
   contents: string,
   imagePaths: string[],
 ) => {
-  const feedSql = `INSERT INTO feedDB (user_id, pet_name, title, contents) VALUES (?, ?, ?, ?)`;
+  const addFeedSql = `INSERT INTO feedDB (user_id, pet_name, title, contents) VALUES (?, ?, ?, ?)`;
 
-  conn.query(feedSql, [userId, petName, title, contents], (err, result: ResultSetHeader) => {
+  conn.query(addFeedSql, [userId, petName, title, contents], (err, result: ResultSetHeader) => {
     if(err) {
       console.error('User. insertFeed: ', err);
       return;

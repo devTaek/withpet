@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { RootState } from '../../../redux/store/store';
 import axios from 'axios';
 
-const AddFeed = () => {
+const AddFeed = ({setAddFeed}: {setAddFeed: React.Dispatch<React.SetStateAction<boolean>>}) => {
   const user = useSelector((state: RootState) => state.user.user);
   let userId = user.userId;
   let pets = user.pet.map((pet) => pet.petName);
@@ -31,10 +31,11 @@ const AddFeed = () => {
           "Content-Type": "multipart/form-data"
         }
       })
-      console.log(response.data)
+
       if(response.data.success) {
         console.log("AddFeed. onSubmit: 응답 성공", response.data);
       }
+      setAddFeed(false);
     } catch(error) {
       console.error("AddFeed. onSubmit: 요청 실패", error)
     }

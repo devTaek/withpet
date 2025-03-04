@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { IoMdAdd } from "react-icons/io";
 import Images from '../assets/img';
@@ -7,6 +7,7 @@ import FeedDetail from "../components/specific/petstar/FeedDetail";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store/store";
 import AddFeed from "../components/specific/petstar/AddFeed";
+import axios from "axios";
 
 // 피드 데이터 타입 정의
 interface Feed {
@@ -101,6 +102,19 @@ const Petstar = () => {
   const user = useSelector((state: RootState) => state.user.user)
   let userId = user.userId;
 
+  useEffect(() => {
+    const fetchFeeds = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/petstar');
+        console.log(response.data.feeds);
+      } catch (error) {
+        console.error("Petstar. fetchFeeds: 요청 실패", error);
+      }
+    }
+
+    fetchFeeds();
+  }, [])
+
   const privatePageBtn = () => {
       if(!userId) {
         toast.error('로그인이 필요합니다.', {
@@ -162,7 +176,7 @@ const Petstar = () => {
       {/* 추가모달 */}
       {addFeed && (
         <Modal onCloseBtn={onCloseBtn}>
-          <AddFeed />
+          <AddFeed setAddFeed={setAddFeed} />
         </Modal>
       )}
       {/* 모달 */}

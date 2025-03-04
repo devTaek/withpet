@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 type Themes =  'theme0' | "theme1" | "theme2";
 
 interface ThemeSliceState {
-  mode: Themes
+  mode: Themes,
 }
 
 const initialState: ThemeSliceState = {
