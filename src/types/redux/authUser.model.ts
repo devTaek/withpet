@@ -1,3 +1,4 @@
+import { Feed } from "../interfaces/feed";
 import { UserData } from "../interfaces/user";
 
 export interface AuthState {
@@ -6,4 +7,8 @@ export interface AuthState {
 
 export interface UserState {
   user: UserData;
+}
+
+export interface FeedState {
+  feed: Feed;
 }

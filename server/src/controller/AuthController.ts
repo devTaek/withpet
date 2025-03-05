@@ -9,7 +9,6 @@ import bcrypt from 'bcrypt';
 /** 로그인 (회원정보 찾기) */
 export const login = (req: Request, res: Response): void => {
   const {userId, userPw} = req.body;
-  // console.log('Authorization Header:', req.headers['authorization']);
 
   select(userId, async function(result) {
 
@@ -76,7 +75,7 @@ export const login = (req: Request, res: Response): void => {
               petActivity: pet.pet_activity,
             }))
           }
-          console.log(user)
+
           return res.send({ accessToken, user });
         })
 

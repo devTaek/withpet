@@ -58,7 +58,7 @@ const login = (req, res) => {
                         secure: false, // http 사용 (https : true)
                         httpOnly: true, // 자바스크립트 접근 불가
                     });
-                    (0, Auth_1.selectPet)(userId, (result) => __awaiter(this, void 0, void 0, function* () {
+                    (0, Auth_1.selectPet)(userId, (result) => __awaiter(this, void 0, void 0, function() {
                         const isPetState = result.length;
                         if (result) {
                             user.pet = result.map((pet) => ({

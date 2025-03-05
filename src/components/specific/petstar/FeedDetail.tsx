@@ -1,14 +1,6 @@
 import { useState } from "react";
 
-interface Feed {
-  id: number;
-  pet_id: string;
-  title: string;
-  img: string[];
-  content: string;
-  comments: { feed_id: string; content: string }[];
-  like: number;
-}
+import { Feed } from "../../../types/interfaces/feed";
 
 interface FeedDetailProps {
   feed: Feed;
@@ -16,17 +8,17 @@ interface FeedDetailProps {
 
 const FeedDetail = ({ feed }: FeedDetailProps) => {
   const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState(feed.comments);
+  // const [comments, setComments] = useState(feed.comments);
 
   const addComment = () => {
     if (!newComment.trim()) return;
 
     const newCommentObj = {
-      feed_id: feed.id.toString(),
-      content: newComment,
+      memberId: feed.id.toString(),
+      comment: newComment,
     };
 
-    setComments([...comments, newCommentObj]);
+    // setComments([...comments, newCommentObj]);
     setNewComment("");
   };
 
@@ -34,11 +26,11 @@ const FeedDetail = ({ feed }: FeedDetailProps) => {
 
   return (
     <div className="bg-white p-4 rounded-lg shadow">
-      <div className="text-gray-700 font-semibold">{feed.pet_id}</div>
+      <div className="text-gray-700 font-semibold">{feed.petName}</div>
       <h1 className="text-xl font-bold my-2">{feed.title}</h1>
 
       <div className="relative mb-3">
-        <img src={feed.img[0]} alt='' className="w-full h-60 object-cover rounded-lg"
+        <img src={`http://localhost:5000/api/petstar/feeds/${feed.img[0]}`} alt='' className="w-full h-60 object-contain rounded-lg"
         />
       </div>
 
@@ -48,15 +40,16 @@ const FeedDetail = ({ feed }: FeedDetailProps) => {
         <h2 className="text-lg font-semibold mb-2">댓글</h2>
 
         <ul className="space-y-2 mb-3 max-h-40 overflow-auto">
-          {comments.length > 0 ? (
+          {/* {comments.length > 0 ? (
             comments.map((comment, index) => (
-              <li key={index} className="bg-gray-100 p-2 rounded-md">
-                {comment.content || "내용 없음"}
+              <li key={index} className="flex items-center bg-gray-100 p-2 rounded-md">
+                <span className="mr-2 text-sm">{comment.memberId}</span>
+                <span className="text-sm">{comment.comment || "내용 없음"}</span>
               </li>
             ))
           ) : (
             <p className="text-gray-500">아직 댓글이 없습니다.</p>
-          )}
+          )} */}
         </ul>
 
         {/* 댓글 입력 */}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { RootState } from '../../../redux/store/store';
 import axios from 'axios';
@@ -7,6 +7,7 @@ import axios from 'axios';
 const AddFeed = ({setAddFeed}: {setAddFeed: React.Dispatch<React.SetStateAction<boolean>>}) => {
   const user = useSelector((state: RootState) => state.user.user);
   let userId = user.userId;
+  const dispatch = useDispatch();
   let pets = user.pet.map((pet) => pet.petName);
   const { register, handleSubmit, watch, formState:{errors} } = useForm();
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -32,9 +33,8 @@ const AddFeed = ({setAddFeed}: {setAddFeed: React.Dispatch<React.SetStateAction<
         }
       })
 
-      if(response.data.success) {
-        console.log("AddFeed. onSubmit: 응답 성공", response.data);
-      }
+      // dispatch(feedActions.addFeed({feed: response.data}));
+      
       setAddFeed(false);
     } catch(error) {
       console.error("AddFeed. onSubmit: 요청 실패", error)

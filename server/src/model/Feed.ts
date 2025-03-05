@@ -10,17 +10,17 @@ const conn = mysql.createPool({
 export const selectFeeds = (cb: (err: any, results: any) => void) => {
   const sql = `
     SELECT 
-      f.id,
+      f.feed_id,
       f.user_id,
       f.pet_name,
       f.title,
       f.contents,
-      i.img,
+      JSON_ARRAYAGG(i.img) AS imgs,
       f.created_at
     FROM feedDB AS f
     JOIN feedImageDB AS i
-    ON f.id = i.feed_id
-    WHERE f.id = i.feed_id
+    ON f.feed_id = i.feed_id
+    GROUP BY f.feed_id
     `;
 
 conn.query(sql, (err, results) => {

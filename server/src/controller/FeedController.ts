@@ -2,12 +2,26 @@ import { NextFunction, Request, Response } from "express";
 import { insertFeed } from "../model/Feed";
 import { selectFeeds } from "../model/Feed";
 
+import { Feed } from "../types/user";
+
 export const getFeeds = (req: Request, res: Response, next: NextFunction) => {
   selectFeeds((err, results) => {
     if(err) {
       return res.status(500).json({message: "FeedController.getFeeds: DB Error", err})
     }
-    res.status(200).json({feeds: results});
+
+    const feeds = results.map((feed: Feed) => (
+      {
+        id: feed.feed_id,
+        userId: feed.user_id,
+        petName: feed.pet_name,
+        title: feed.title,
+        contents: feed.contents,
+        img: feed.imgs,
+        createdAt: feed.created_at
+      }
+    ))
+    res.status(200).json({feeds: feeds});
   });
 }
 

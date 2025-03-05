@@ -59,13 +59,12 @@ export const insertPet = (
   conn.query(sql, [userId, name, species, birth, gender, weight, food, activity], (err, result: ResultSetHeader) => {
     if(err) {
       console.error("펫 정보 추가 오류:", err);
-      return cb(null); // ❌ 오류 발생 시 false 반환
+      return cb(null);
     } else {
       console.log('펫정보가 DB에 추가되었습니다.')
       
       if(result.insertId) {
-        console.log(result.insertId)
-        getPetById(result.insertId, cb); // ✅ 데이터가 추가되었으면 true 반환
+        getPetById(result.insertId, cb);
       }
 
     };
