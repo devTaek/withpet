@@ -24,7 +24,6 @@ const Login = (
       })
 
       const { accessToken, user } = response.data;
-      console.log(user)
       dispatch(authActions.login({ accessToken: accessToken }));
       dispatch(userActions.getUser({ user: user }));
     } catch(error) {

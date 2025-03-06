@@ -10,5 +10,5 @@ export interface UserState {
 }
 
 export interface FeedState {
-  feed: Feed;
+  feed: Feed[];
 }

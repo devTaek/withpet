@@ -7,5 +7,5 @@ export interface Feed {
   content: string;
   // comments: { memberId: string; comment: string }[];
   // like: number;
-  created_at: string;
+  createdAt: string;
 }

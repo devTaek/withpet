@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { feedActions } from '../../../redux/slice/feed';
 import { RootState } from '../../../redux/store/store';
-import axios from 'axios';
 
 const AddFeed = ({setAddFeed}: {setAddFeed: React.Dispatch<React.SetStateAction<boolean>>}) => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -32,8 +33,8 @@ const AddFeed = ({setAddFeed}: {setAddFeed: React.Dispatch<React.SetStateAction<
           "Content-Type": "multipart/form-data"
         }
       })
-
-      // dispatch(feedActions.addFeed({feed: response.data}));
+      console.log(response.data.addFeed);
+      // dispatch(feedActions.addFeed(response.data.feeds));
       
       setAddFeed(false);
     } catch(error) {

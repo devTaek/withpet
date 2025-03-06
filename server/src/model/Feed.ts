@@ -1,4 +1,4 @@
-import mysql, { ResultSetHeader } from "mysql2";
+import mysql, { ResultSetHeader, RowDataPacket } from "mysql2";
 
 const conn = mysql.createPool({
   host: 'localhost',
@@ -6,6 +6,32 @@ const conn = mysql.createPool({
   password: `Mjdxorbs1!`,
   database: `WITHPET`,
 })
+
+export const getFeedById = (feedId: number, cb: (result: any) => void) => {
+  const selectSql = `
+    select
+      f.feed_id,
+      f.user_id,
+      f.pet_name,
+      f.title,
+      f.contents,
+      f.created_at,
+      JSON_ARRAYAGG(i.img) AS imgs
+    FROM feedDB AS f
+    LEFT JOIN feedImageDB AS i
+    ON f.feed_id = i.feed_id
+    WHERE f.feed_id = ?
+    GROUP BY f.feed_id;
+  `;
+  conn.query(selectSql, [feedId], (err, rows: RowDataPacket[]) => {
+    if(err) {
+      console.error("펫 추가 후 조회 오류: ", err);
+      return cb(null);
+    }
+    
+    cb(rows[0]);
+  })
+}
 
 export const selectFeeds = (cb: (err: any, results: any) => void) => {
   const sql = `
@@ -15,8 +41,8 @@ export const selectFeeds = (cb: (err: any, results: any) => void) => {
       f.pet_name,
       f.title,
       f.contents,
-      JSON_ARRAYAGG(i.img) AS imgs,
-      f.created_at
+      f.created_at,
+      JSON_ARRAYAGG(i.img) AS imgs
     FROM feedDB AS f
     JOIN feedImageDB AS i
     ON f.feed_id = i.feed_id
@@ -38,6 +64,8 @@ export const insertFeed = (
   title: string,
   contents: string,
   imagePaths: string[],
+
+  cb: (result: any) => void
 ) => {
   const addFeedSql = `INSERT INTO feedDB (user_id, pet_name, title, contents) VALUES (?, ?, ?, ?)`;
 
@@ -55,8 +83,11 @@ export const insertFeed = (
       conn.query(imageSql, [feedId, img], (err) => {
         if(err) {
           console.error('User. insertFeed. imagePaths: ', err);
+        } else {
+          console.log('Feed. 이미지 추가 완료.')
         }
       })
     })
+    getFeedById(feedId, cb);
   })
 }

@@ -21,29 +21,33 @@ export const getFeeds = (req: Request, res: Response, next: NextFunction) => {
         createdAt: feed.created_at
       }
     ))
-    res.status(200).json({feeds: feeds});
+    return res.status(200).json({feeds: feeds});
   });
 }
 
-export const addFeed = (req: Request, res: Response, next: NextFunction) => {
+export const addFeed = (req: Request, res: Response) => {
   const {userId, title, contents, petName} = req.body;
   const images = req.files;
 
   if(images && Array.isArray(images)) {
     const imagePaths = images.map((image: any) => `${image.filename}`); // 파일 경로 배열 생성
     
-    insertFeed(userId, title, contents, petName, imagePaths);
-
-    res.json({
-      success: true,
-      addFeed: {
-        userId,
-        title,
-        contents,
-        petName,
-        img: imagePaths, // 이미지 경로를 배열로 응답
+    insertFeed(userId, title, contents, petName, imagePaths, (result: any) => {
+      if(!result) {
+        return res.status(401).json({success: false, message: "FeedController.addFeed: DB Error"})
       }
-    })
+      const addFeedInfo = {
+          id: result.feed_id,
+          userId: result.user_id,
+          petName: result.pet_name,
+          title: result.title,
+          contents: result.contents,
+          img: result.imgs, // 이미지 경로를 배열로 응답
+      }
+
+      return res.json({success: true, addFeed: { addFeedInfo }})
+    });
+
   } else {
     res.status(400).json({success: false, message: "No image uploaded"});
   }

@@ -11,7 +11,7 @@ dotenv.config();
 
 // CORS 설정
 const corsOptions = {
-  origin: 'http://localhost:3000', // React 앱이 실행되는 포트
+  origin: process.env.CLIENT_URL, // React 앱이 실행되는 포트
   credentials: true, // 자격 증명 포함 허용
 };
 app.use(cors(corsOptions));
