@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }))
 
 // // 라우터 설정
 app.use('/api', router);
-app.use('/api/petstar', express.static(path.join(__dirname, '../uploads')))   // 서버 폴더 파일 공개
+app.use('/api/petstar', express.static(path.join(__dirname, '../uploads/feeds')))   // 서버 폴더 파일 공개
 
 // 포트 5000에서 서버 실행
 const PORT = process.env.PORT || 5000;

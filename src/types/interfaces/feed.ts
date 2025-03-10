@@ -4,7 +4,7 @@ export interface Feed {
   petName: string;
   title: string;
   img: string[];
-  content: string;
+  contents: string;
   // comments: { memberId: string; comment: string }[];
   // like: number;
   createdAt: string;

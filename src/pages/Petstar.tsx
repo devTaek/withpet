@@ -24,8 +24,6 @@ const Petstar = () => {
   const [selectedFeed, setSelectedFeed] = useState<Feed | null>(null);
   const [addFeed, setAddFeed] = useState(false);
   
-  
-  
   const privatePageBtn = () => {
       if(!userId) {
         toast.error('로그인이 필요합니다.', {
@@ -47,7 +45,7 @@ const Petstar = () => {
     setSelectedFeed(null);
     setAddFeed(false);
   };
-
+  
   useEffect(() => {
     const fetchFeeds = async () => {
       try {
@@ -61,7 +59,7 @@ const Petstar = () => {
     }
 
     fetchFeeds();
-  }, [])
+  }, [feeds.length]);
 
   return (
     <div className="h-[calc(100vh-4rem)] mt-16 flex items-center justify-center p-10 gap-10">
@@ -79,7 +77,7 @@ const Petstar = () => {
               <li key={feed.id} className="transform transition duration-300 ease-in-out h-80 hover:scale-105">
                 <img
                   onClick={() => viewFeed(feed)}
-                  src={`http://localhost:5000/api/petstar/feeds/${feed.img[0]}`}
+                  src={`http://localhost:5000/api/petstar/${feed.img && feed.img[0] ? feed.img[0] : ''}`}
                   alt=""
                   className="w-full h-full object-contain cursor-pointer"
                 />

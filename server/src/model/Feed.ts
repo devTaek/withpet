@@ -88,6 +88,7 @@ export const insertFeed = (
         }
       })
     })
+
     getFeedById(feedId, cb);
   })
 }

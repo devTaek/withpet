@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { Feed } from "../../../types/interfaces/feed";
 
@@ -9,6 +9,10 @@ interface FeedDetailProps {
 const FeedDetail = ({ feed }: FeedDetailProps) => {
   const [newComment, setNewComment] = useState("");
   // const [comments, setComments] = useState(feed.comments);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [viewBtn, setViewBtn] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   const addComment = () => {
     if (!newComment.trim()) return;
@@ -22,20 +26,114 @@ const FeedDetail = ({ feed }: FeedDetailProps) => {
     setNewComment("");
   };
 
+  const slideHandler = (direction: number): void => {
+    setCurrentIndex((prev) => {
+      let newIndex = prev + direction;
+      if(newIndex < 0) return 0;
+      if(newIndex >= feed.img.length) return feed.img.length - 1;
 
+      return newIndex;
+    });
+  };
+
+
+  /* 모바일 */
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setStartX(e.touches[0].clientX);
+    setIsDragging(true);
+  }
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if(!isDragging) return;
+    const moveX = e.touches[0].clientX - startX;
+
+    if(moveX > 50) {
+      slideHandler(1);
+      setIsDragging(false);
+    } else if(moveX < -50) {
+      slideHandler(-1);
+      setIsDragging(false);
+    }
+  }
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  }
+
+  /* PC */
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setStartX(e.clientX);
+    setIsDragging(true);
+  }
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if(!isDragging) return;
+    const moveX = e.clientX - startX;
+
+    if(moveX > 50) {
+      slideHandler(-1);
+      setIsDragging(false);
+    } else if(moveX < -50) {
+      slideHandler(1);
+      setIsDragging(false);
+    }
+  }
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  }
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow">
+    <div className="flex flex-col bg-white p-4 rounded-lg shadow">
+      {/* 반려견 이름 */}
       <div className="text-gray-700 font-semibold">{feed.petName}</div>
+
+      {/* 제목 */}
       <h1 className="text-xl font-bold my-2">{feed.title}</h1>
 
-      <div className="relative mb-3">
-        <img src={`http://localhost:5000/api/petstar/feeds/${feed.img[0]}`} alt='' className="w-full h-60 object-contain rounded-lg"
-        />
+      {/* 이미지 */}
+      <div className={`relative mb-3 overflow-hidden`} onMouseEnter={() => setViewBtn(true)} onMouseLeave={() => setViewBtn(false)}>
+        <div
+          className={`flex w-[${feed.img.length * 100}] `}
+          style={{
+            transform: `translateX(-${currentIndex * 100}%)`,
+            transition: "transform 0.3s ease-in-out",
+          }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+        >
+          {feed.img.map((item, id) => (
+            <div key={id} className="w-[100%] flex items-center justify-center flex-shrink-0">
+              <img
+                src={`http://localhost:5000/api/petstar/${item}`}
+                alt=""
+                className="h-60 object-cover rounded-lg"
+              />
+            </div>
+          ))}
+        </div>
+        {feed.img.length > 1 && viewBtn &&<div>
+          <button
+            className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-black/30 text-white w-7 h-7 flex items-center justify-center rounded-full text-2xl hover:bg-black/50 transition"
+            onClick={() => slideHandler(-1)}
+          >
+            ◀
+          </button>
+          <button
+            className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-black/30 text-white w-7 h-7 flex items-center justify-center rounded-full text-2xl hover:bg-black/50 transition"
+            onClick={() => slideHandler(1)}
+          >
+            ▶
+          </button>
+        </div>}
       </div>
 
-      <div className="text-gray-600">{feed.content}</div>
+      {/* 내용 */}
+      <div className="text-gray-600">{feed.contents}</div>
       <br />
+
+      {/* 댓글 */}
       <div className="pt-4 border-t">
         <h2 className="text-lg font-semibold mb-2">댓글</h2>
 

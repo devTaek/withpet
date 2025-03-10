@@ -33,8 +33,9 @@ const AddFeed = ({setAddFeed}: {setAddFeed: React.Dispatch<React.SetStateAction<
           "Content-Type": "multipart/form-data"
         }
       })
-      console.log(response.data.addFeed);
-      // dispatch(feedActions.addFeed(response.data.feeds));
+      console.log(formData)
+
+      dispatch(feedActions.addFeed(response.data.addFeedInfo));
       
       setAddFeed(false);
     } catch(error) {

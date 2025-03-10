@@ -43,9 +43,10 @@ export const addFeed = (req: Request, res: Response) => {
           title: result.title,
           contents: result.contents,
           img: result.imgs, // 이미지 경로를 배열로 응답
+          createdAt: result.created_at
       }
 
-      return res.json({success: true, addFeed: { addFeedInfo }})
+      return res.json({success: true, addFeedInfo: { addFeedInfo }})
     });
 
   } else {
