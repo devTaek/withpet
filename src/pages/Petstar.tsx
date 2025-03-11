@@ -45,7 +45,7 @@ const Petstar = () => {
     setSelectedFeed(null);
     setAddFeed(false);
   };
-  
+
   useEffect(() => {
     const fetchFeeds = async () => {
       try {

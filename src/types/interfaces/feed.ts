@@ -9,3 +9,8 @@ export interface Feed {
   // like: number;
   createdAt: string;
 }
+
+export interface FeedComments {
+  memberId: string;
+  comment: string;
+}

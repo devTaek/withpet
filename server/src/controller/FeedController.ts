@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { insertFeed } from "../model/Feed";
+import { insertFeed, insertFeedComment, selectFeedComments } from "../model/Feed";
 import { selectFeeds } from "../model/Feed";
 
 import { Feed } from "../types/user";
@@ -52,4 +52,41 @@ export const addFeed = (req: Request, res: Response) => {
   } else {
     res.status(400).json({success: false, message: "No image uploaded"});
   }
+}
+
+export const getFeedComments = (req: Request, res: Response) => {
+  const { feedId } = req.params;
+  const numberFeedId = Number(feedId)
+
+  selectFeedComments(numberFeedId, (result: any) => {
+    if(!result) {
+      return res.status(401).json({success: false, message: "FeedController.getFeedComments: DB Error"})
+    }
+    const comments = result.map((comment: any) => (
+      {
+        memberId: comment.member_id,
+        comment: comment.comment
+      }
+    ))
+    return res.status(200).json({comments: comments});
+  });
+
+}
+
+export const addFeedComment = (req: Request, res: Response) => {
+  const { feedId } = req.params;
+  const { memberId, comment } = req.body;
+
+  const numberFeedId = Number(feedId)
+  console.log(numberFeedId, memberId, comment)
+  insertFeedComment(memberId, numberFeedId, comment, (result: any) => {
+    if(!result) {
+      return res.status(401).json({success: false, message: "FeedController.addFeedComment: DB Error"})
+    }
+    const addCommentInfo = {
+      memberId: result.member_id,
+      comment: result.comment
+    }
+    return res.json({success: true, addCommentInfo: { addCommentInfo }})
+  })
 }

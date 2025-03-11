@@ -92,3 +92,45 @@ export const insertFeed = (
     getFeedById(feedId, cb);
   })
 }
+
+export const selectFeedComments = (
+  feedId: number,
+  cb: (result: any) => void
+) => {
+  const sql = `
+    SELECT 
+      c.member_id,
+      c.comment,
+      c.created_at
+    FROM commentDB AS c
+    WHERE c.feed_id = ?
+  `
+  conn.query(sql, [feedId], (err, result) => {
+    if(err) {
+      console.error('Comments 가져오기 실패', err);
+      return;
+    }
+    cb(result);
+  })
+}
+
+export const insertFeedComment = (
+  memberId: string,
+  feedId: number,
+  comment: string,
+  cb: (result: any) => void
+) => {
+  const sql = `
+    INSERT INTO commentDB (member_id, feed_id, comment) VALUES (?, ?, ?);
+  `
+
+  conn.query(sql, [memberId, feedId, comment], (err, result) => {
+    if(err) {
+      console.error('Comment 추가 실패: ', err);
+      return;
+    }
+    console.log(result);
+
+    cb(result);
+  })
+}

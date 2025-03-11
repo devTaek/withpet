@@ -29,7 +29,8 @@ router.delete('/delete', UserController.verifyAccessToken, UserController.delete
 
 /* MyStar */
 router.get('/petstar', FeedController.getFeeds);
+router.get('/petstar/comments/:feedId', FeedController.getFeedComments);
+
 router.post('/petstar/add', upload.array('feedImg'), FeedController.addFeed);
-
-
+router.post('/petstar/comment/:feedId', FeedController.addFeedComment);
 export default router;

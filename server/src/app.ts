@@ -5,6 +5,9 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import router from './routes'
 
+// import http from 'http'
+// import { Server } from 'socket.io';
+
 const app = express();
 dotenv.config();
 
@@ -12,7 +15,7 @@ dotenv.config();
 // CORS 설정
 const corsOptions = {
   origin: process.env.CLIENT_URL, // React 앱이 실행되는 포트
-  credentials: true, // 자격 증명 포함 허용
+  credentials: true, // 자격 증명 포함 허용 
 };
 app.use(cors(corsOptions));
 app.use(cookieParser());
@@ -24,6 +27,29 @@ app.use(express.urlencoded({ extended: true }))
 // // 라우터 설정
 app.use('/api', router);
 app.use('/api/petstar', express.static(path.join(__dirname, '../uploads/feeds')))   // 서버 폴더 파일 공개
+
+
+// 웹소켓
+// const server = http.createServer(app);
+// const io = new Server(server, {
+//   cors: {
+//     origin: process.env.CLIENT_URL,  // 클라이언트 주소 허용
+//     methods: ["GET", "POST"]
+//   }
+// });
+
+// io.on("connection", (socket) => {
+//   console.log(`User Connected: ${socket.id}`);
+
+//   socket.on('send_message', (message) => {
+//     io.emit('receive_message', message);
+//   });
+
+//   socket.on('disconnect', () => {
+//     console.log("User Disconnected");
+//   });
+// });
+
 
 // 포트 5000에서 서버 실행
 const PORT = process.env.PORT || 5000;
