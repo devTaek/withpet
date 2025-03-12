@@ -17,9 +17,9 @@ const AddFeed = ({setAddFeed}: {setAddFeed: React.Dispatch<React.SetStateAction<
     const formData = new FormData();
 
     formData.append("userId", (userId));
+    formData.append("petName", data.petName);
     formData.append("title", data.title);
-    formData.append("contents", data.contents);
-    formData.append("petName", data.petName || "");
+    formData.append("contents", data.contents || "");
 
     if(data.feedImg && data.feedImg.length > 0) {
       Array.from(data.feedImg as FileList).forEach((file) => {

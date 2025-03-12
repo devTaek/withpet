@@ -1,8 +1,8 @@
-import { set, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import { FeedComments } from '../../../types/interfaces/feed';
 import authAxios from '../../../utils/authAxios';
-import { SetStateAction, useEffect, useState } from 'react';
+import { SetStateAction, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 
@@ -23,6 +23,8 @@ const FeedCommentsPart = ({
 }: FeedCommentsPartProps) => {
   const userId = useSelector((state: RootState) => state.user.user?.userId);
   const { register, handleSubmit } = useForm<FeedComments>();
+
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleLike = async () => {
     try {
@@ -55,13 +57,23 @@ const FeedCommentsPart = ({
 
   return (
     <div className="pt-4 border-t">
-      <h2 className="text-lg font-semibold mb-2 flex justify-between">
+      <h2 className="relative text-lg font-semibold mb-2 flex justify-between">
         댓글
         <button
           className="text-gray-500 hover:text-red-500 transition"
           onClick={handleLike}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
           ❤️ {likeMembers.length}
+
+          {isHovered && (
+            <span className="absolute top-0 right-0 bg-gray-800 text-white text-sm px-4 py-2 rounded-lg shadow-lg flex flex-col space-y-2">
+              {likeMembers.map((member, index) => (
+                <span key={index} className="text-xs">{member}</span>
+              ))}
+            </span>
+          )}
         </button>
       </h2>
       <ul className="space-y-2 mb-3 max-h-40 overflow-auto">

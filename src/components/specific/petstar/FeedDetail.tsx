@@ -33,7 +33,6 @@ const FeedDetail = ({ feed }: FeedDetailProps) => {
     fetchFeedDetails();
   }, [feed]);
 
-
   return (
     <div className="flex flex-col bg-white p-4 rounded-lg shadow">
       {/* 반려견 이름 */}

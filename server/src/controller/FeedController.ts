@@ -32,7 +32,7 @@ export const addFeed = (req: Request, res: Response) => {
   if(images && Array.isArray(images)) {
     const imagePaths = images.map((image: any) => `${image.filename}`); // 파일 경로 배열 생성
     
-    insertFeed(userId, title, contents, petName, imagePaths, (result: any) => {
+    insertFeed(userId, petName, title, contents, imagePaths, (result: any) => {
       if(!result) {
         return res.status(401).json({success: false, message: "FeedController.addFeed: DB Error"})
       }
