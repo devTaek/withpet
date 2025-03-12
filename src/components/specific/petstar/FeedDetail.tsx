@@ -1,32 +1,38 @@
 import { Feed, FeedComments } from "../../../types/interfaces/feed";
 import FeedImagePart from "./FeedImagePart";
 import FeedCommentsPart from "./FeedCommentsPart";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store/store";
 
 interface FeedDetailProps {
   feed: Feed;
 }
 
 const FeedDetail = ({ feed }: FeedDetailProps) => {
+  const userId = useSelector((state: RootState) => state.user.user?.userId);
   const [comments, setComments] = useState<FeedComments[]>([]);
-  const [like, setLike] = useState(0);
+  const [likeMembers, setLikeMembers] = useState<string[]>([]);
+
+  const likeState = useMemo(() => likeMembers.includes(userId), [likeMembers, userId]);
 
   useEffect(() => {
     const fetchFeedDetails = async () => {
       try {
         const commentsResponse = await axios.get(`http://localhost:5000/api/petstar/comments/${feed.id}`);
-        // const likeResponse = await axios.get(`http://localhost:5000/api/petstar/like/${feed.id}`);
-
+        const likesResponse = await axios.get(`http://localhost:5000/api/petstar/like/${feed.id}`);
+        
         setComments(commentsResponse.data.comments);
-        // setLike(likeResponse.data.like);
+        setLikeMembers(likesResponse.data.likeMemberIds);
       } catch(error) {
         console.error("Petstar. fetchFeedDetails: 요청 실패", error);
       }
     }
 
     fetchFeedDetails();
-  }, [feed.id]);
+  }, [feed]);
+
 
   return (
     <div className="flex flex-col bg-white p-4 rounded-lg shadow">
@@ -43,8 +49,14 @@ const FeedDetail = ({ feed }: FeedDetailProps) => {
       <div className="text-gray-600">{feed.contents}</div>
       <br />
 
-      {/* 댓글 */}
-      <FeedCommentsPart comments={comments} feedId={feed.id} />
+      {/* 댓글 & 좋아요 */}
+      <FeedCommentsPart
+        feedId={feed.id}
+        comments={comments}
+        likeMembers={likeMembers}
+        setLikeMembers={setLikeMembers}
+        likeState={likeState}
+      />
     </div>
   );
 };

@@ -129,8 +129,67 @@ export const insertFeedComment = (
       console.error('Comment 추가 실패: ', err);
       return;
     }
-    console.log(result);
 
     cb(result);
   })
 }
+
+export const selectFeedLike = (
+  feedId: number,
+
+  cb: (result: any) => void
+) => {
+  const sql = `
+  SELECT member_id
+  FROM likeDB
+  WHERE feed_id = ?;
+  `;
+
+  conn.query(sql, [feedId], (err, result: RowDataPacket[]) => {
+    if(err) {
+      console.error('Like 개수 조회 실패: ', err);
+      return cb(null);
+    }
+    const likeMemberIds = result.map((row: any) => row.member_id);
+
+    return cb(likeMemberIds);
+  })
+}
+
+export const insertFeedLike = (
+  memberId: string,
+  feedId: number,
+  cb: (result: any) => void
+) => {
+  const sql = `
+    INSERT INTO likeDB (member_id, feed_id) VALUES (?, ?);
+  `
+
+  conn.query(sql, [memberId, feedId], (err, result) => {
+    if(err) {
+      console.error('Like 추가 실패: ', err);
+      return cb(null);
+    }
+
+    cb(result);
+  })
+}
+
+export const deleteFeedLike = (
+  memberId: string,
+  feedId: number,
+  cb: (result: any) => void
+) => {
+  const sql = `
+    DELETE FROM likeDB WHERE member_id = ? AND feed_id = ?;
+  `;
+
+  conn.query(sql, [memberId, feedId], (err, result) => {
+    if (err) {
+      console.error('Like 삭제 실패: ', err);
+      return cb(null); // 에러 발생 시 null을 콜백으로 반환
+    }
+
+    cb(result); // 결과를 콜백으로 전달
+  });
+};

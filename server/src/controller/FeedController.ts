@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { insertFeed, insertFeedComment, selectFeedComments } from "../model/Feed";
+import { deleteFeedLike, insertFeed, insertFeedComment, insertFeedLike, selectFeedComments, selectFeedLike } from "../model/Feed";
 import { selectFeeds } from "../model/Feed";
 
 import { Feed } from "../types/user";
@@ -78,7 +78,6 @@ export const addFeedComment = (req: Request, res: Response) => {
   const { memberId, comment } = req.body;
 
   const numberFeedId = Number(feedId)
-  console.log(numberFeedId, memberId, comment)
   insertFeedComment(memberId, numberFeedId, comment, (result: any) => {
     if(!result) {
       return res.status(401).json({success: false, message: "FeedController.addFeedComment: DB Error"})
@@ -89,4 +88,50 @@ export const addFeedComment = (req: Request, res: Response) => {
     }
     return res.json({success: true, addCommentInfo: { addCommentInfo }})
   })
+}
+
+
+
+export const getFeedLike = (req: Request, res: Response) => {
+  const { feedId } = req.params;
+  const numberFeedId = Number(feedId);  
+
+  selectFeedLike(numberFeedId, (result: any) => {
+    if (!result || result.length === 0) {
+      return res.status(200).json({ likeMemberIds: [] });
+    }
+
+    return res.status(200).json({ likeMemberIds: result });
+  });
+}
+
+
+export const addFeedLike = (req: Request, res: Response) => {
+  const { feedId } = req.params;
+  const { userId } = req.body;
+
+  const numberFeedId = Number(feedId)
+  const memberId = userId;
+
+  insertFeedLike(memberId, numberFeedId, (result: any) => {
+    if(!result) {
+      return res.status(401).json({success: false, message: "FeedController.addFeedLike: DB Error"})
+    }
+    return res.status(200).json({ message: "Like added successfully" });
+  })
+}
+
+export const removeFeedLike = (req: Request, res: Response) => {
+  const { feedId } = req.params;
+  const { userId } = req.body;
+
+  const numberFeedId = Number(feedId)
+  const memberId = userId;
+
+  deleteFeedLike(memberId, numberFeedId, (result: any) => {
+    if (!result) {
+      return res.status(401).json({ success: false, message: "FeedController.removeFeedLike: DB Error" });
+    }
+    return res.status(200).json({ message: "Like removed successfully" });
+  });
 }

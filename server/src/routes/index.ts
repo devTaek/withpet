@@ -30,7 +30,12 @@ router.delete('/delete', UserController.verifyAccessToken, UserController.delete
 /* MyStar */
 router.get('/petstar', FeedController.getFeeds);
 router.get('/petstar/comments/:feedId', FeedController.getFeedComments);
+router.get('/petstar/like/:feedId', FeedController.getFeedLike);
 
 router.post('/petstar/add', upload.array('feedImg'), FeedController.addFeed);
 router.post('/petstar/comment/:feedId', FeedController.addFeedComment);
+router.post('/petstar/like/:feedId', FeedController.addFeedLike);
+router.post('/petstar/unlike/:feedId', FeedController.removeFeedLike);
+
+
 export default router;

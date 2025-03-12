@@ -73,8 +73,8 @@ const Petstar = () => {
         <div className="w-full font-bold text-4xl p-2 text-center">PETSTAR</div>
         <div className="h-full overflow-auto scrollbar-hide">
           <ul className="h-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {feeds?.map((feed: Feed) => (
-              <li key={feed.id} className="transform transition duration-300 ease-in-out h-80 hover:scale-105">
+            {feeds?.map((feed: Feed, id) => (
+              <li key={id} className="transform transition duration-300 ease-in-out h-80 hover:scale-105">
                 <img
                   onClick={() => viewFeed(feed)}
                   src={`http://localhost:5000/api/petstar/${feed.img && feed.img[0] ? feed.img[0] : ''}`}

@@ -5,8 +5,6 @@ export interface Feed {
   title: string;
   img: string[];
   contents: string;
-  // comments: { memberId: string; comment: string }[];
-  // like: number;
   createdAt: string;
 }
 
