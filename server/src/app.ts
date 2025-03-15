@@ -5,8 +5,8 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import router from './routes'
 
-// import http from 'http'
-// import { Server } from 'socket.io';
+import http from 'http'
+import { Server } from 'socket.io';
 
 const app = express();
 dotenv.config();
@@ -30,29 +30,30 @@ app.use('/api/petstar', express.static(path.join(__dirname, '../uploads/feeds'))
 
 
 // 웹소켓
-// const server = http.createServer(app);
-// const io = new Server(server, {
-//   cors: {
-//     origin: process.env.CLIENT_URL,  // 클라이언트 주소 허용
-//     methods: ["GET", "POST"]
-//   }
-// });
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL,  // 클라이언트 주소 허용
+    credentials: true,
+    methods: ["GET", "POST"],
+  }
+});
 
-// io.on("connection", (socket) => {
-//   console.log(`User Connected: ${socket.id}`);
+io.on("connection", (socket) => {
+  console.log(`User Connected: ${socket.id}`);
 
-//   socket.on('send_message', (message) => {
-//     io.emit('receive_message', message);
-//   });
+  socket.on('send_message', (message) => {
+    io.emit('receive_message', message);
+  });
 
-//   socket.on('disconnect', () => {
-//     console.log("User Disconnected");
-//   });
-// });
+  socket.on('disconnect', () => {
+    console.log("User Disconnected");
+  });
+});
 
 
 // 포트 5000에서 서버 실행
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

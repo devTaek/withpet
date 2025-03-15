@@ -1,8 +1,9 @@
 import { useForm } from 'react-hook-form';
+import io, { Socket } from 'socket.io-client';
 
 import { FeedComments } from '../../../types/interfaces/feed';
 import authAxios from '../../../utils/authAxios';
-import { SetStateAction, useState } from 'react';
+import { SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 
@@ -14,6 +15,8 @@ interface FeedCommentsPartProps {
   likeState: boolean;
 }
 
+  const socket = io("http://localhost:5000");
+
 const FeedCommentsPart = ({
   feedId,
   comments,
@@ -22,9 +25,23 @@ const FeedCommentsPart = ({
   likeState
 }: FeedCommentsPartProps) => {
   const userId = useSelector((state: RootState) => state.user.user?.userId);
-  const { register, handleSubmit } = useForm<FeedComments>();
+  const [message, setMessage] = useState("");
+  const [receivedMessage, setReceivedMessage] = useState('');
 
+  
+  const { register, handleSubmit } = useForm<FeedComments>();
   const [isHovered, setIsHovered] = useState(false);
+
+
+  const sendMessage = () => {
+    socket.emit('send_message', message);
+  };
+  useEffect(() => {
+    socket.on('receive_message', (message) => {
+      setReceivedMessage(message);
+    }
+    )
+  }, [socket]);
 
   const handleLike = async () => {
     try {
@@ -39,6 +56,14 @@ const FeedCommentsPart = ({
 
     } catch(err) {
       console.error("FeedCommentsPart. handleLike: ", err);
+    }
+  }
+
+  const handleDeleteComment = async (commentId: number, memberId: string) => {
+    try {
+      await authAxios.delete(`/petstar/delete/${feedId}/${commentId}`, {data: {memberId}})
+    } catch(err) {
+      console.error("FeedCommentsPart. handleDeleteComment: ", err);
     }
   }
 
@@ -57,6 +82,11 @@ const FeedCommentsPart = ({
 
   return (
     <div className="pt-4 border-t">
+      <div>
+        <input value={message} onChange={(e) => setMessage(e.target.value)} />
+        <button onClick={sendMessage}>SEND</button>
+        <p>Received Message: {receivedMessage}</p>
+      </div>
       <h2 className="relative text-lg font-semibold mb-2 flex justify-between">
         댓글
         <button
@@ -67,7 +97,7 @@ const FeedCommentsPart = ({
         >
           ❤️ {likeMembers.length}
 
-          {isHovered && (
+          {isHovered && likeMembers.length > 0 && (
             <span className="absolute top-0 right-0 bg-gray-800 text-white text-sm px-4 py-2 rounded-lg shadow-lg flex flex-col space-y-2">
               {likeMembers.map((member, index) => (
                 <span key={index} className="text-xs">{member}</span>
@@ -76,14 +106,29 @@ const FeedCommentsPart = ({
           )}
         </button>
       </h2>
-      <ul className="space-y-2 mb-3 max-h-40 overflow-auto">
+      <ul className="space-y-2 mb-3 max-h-40 overflow-auto"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
           {comments.length > 0 ? (
             comments.map((comment, index) => (
-              <li key={index} className="flex items-center bg-gray-100 p-2 rounded-md">
-                <span className="mr-2 text-sm">{comment.memberId}</span>
-                <span className="text-sm">{comment.comment || "내용 없음"}</span>
+              <li key={index} className="flex items-center justify-between  bg-gray-100 p-2 rounded-md">
+                <div>
+                  <span className="mr-2 text-sm">{comment.memberId}</span>
+                  <span className="text-sm">{comment.comment || "내용 없음"}</span>
+                </div>
+                {userId === comment.memberId && (
+                  <button
+                    onClick={() => handleDeleteComment(comment.commentId, comment.memberId)}
+                    className="text-red-500 hover:text-red-700 text-sm ml-2"
+                  >
+                    X
+                  </button>
+                )}
               </li>
-            ))
+            ))  
           ) : (
             <p className="text-gray-500">아직 댓글이 없습니다.</p>
           )}

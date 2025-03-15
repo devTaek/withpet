@@ -99,6 +99,7 @@ export const selectFeedComments = (
 ) => {
   const sql = `
     SELECT 
+      c.id,
       c.member_id,
       c.comment,
       c.created_at
@@ -121,13 +122,33 @@ export const insertFeedComment = (
   cb: (result: any) => void
 ) => {
   const sql = `
-    INSERT INTO commentDB (member_id, feed_id, comment) VALUES (?, ?, ?);
+    INSERT INTO commentDB (feed_id, member_id, comment) VALUES (?, ?, ?);
   `
 
-  conn.query(sql, [memberId, feedId, comment], (err, result) => {
+  conn.query(sql, [feedId, memberId, comment], (err, result) => {
     if(err) {
       console.error('Comment 추가 실패: ', err);
       return;
+    }
+
+    cb(result);
+  })
+}
+
+export const deleteFeedComment = (
+  commentId: number,
+  feedId: number,
+  memberId: string,
+  cb: (result: any) => void
+) => {
+  const sql = `
+    DELETE FROM commentDB WHERE id =? AND feed_id = ? AND member_id = ?;
+  `
+
+  conn.query(sql, [commentId, feedId, memberId], (err, result) => {
+    if(err) {
+      console.error('Comment 삭제 실패: ', err);
+      return cb(null);
     }
 
     cb(result);

@@ -28,7 +28,6 @@ export const insert = (
     })
 }
 
-
 export const getPetById = (petId: number, cb: (result: any) => void) => {
   const selectSql = `SELECT * FROM petDB WHERE id = ?`;
   conn.query(selectSql, [petId], (err, rows: RowDataPacket[]) => {
@@ -71,7 +70,6 @@ export const insertPet = (
     
   })
 }
-
 
 // 회원정보 수정
 export const updateUserInfo = (
@@ -165,9 +163,6 @@ export const updatePetInfo = (
   )
 }
 
-
-
-// ********
 // 회원정보 삭제
 export const deleteUser = (
   id: string,

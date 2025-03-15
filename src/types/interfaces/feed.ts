@@ -9,6 +9,7 @@ export interface Feed {
 }
 
 export interface FeedComments {
+  commentId: number;
   memberId: string;
   comment: string;
 }

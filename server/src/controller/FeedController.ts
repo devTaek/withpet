@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { deleteFeedLike, insertFeed, insertFeedComment, insertFeedLike, selectFeedComments, selectFeedLike } from "../model/Feed";
+import { deleteFeedComment, deleteFeedLike, insertFeed, insertFeedComment, insertFeedLike, selectFeedComments, selectFeedLike } from "../model/Feed";
 import { selectFeeds } from "../model/Feed";
 
 import { Feed } from "../types/user";
@@ -56,14 +56,14 @@ export const addFeed = (req: Request, res: Response) => {
 
 export const getFeedComments = (req: Request, res: Response) => {
   const { feedId } = req.params;
-  const numberFeedId = Number(feedId)
 
-  selectFeedComments(numberFeedId, (result: any) => {
+  selectFeedComments(Number(feedId), (result: any) => {
     if(!result) {
       return res.status(401).json({success: false, message: "FeedController.getFeedComments: DB Error"})
     }
     const comments = result.map((comment: any) => (
       {
+        commentId: comment.id,
         memberId: comment.member_id,
         comment: comment.comment
       }
@@ -77,8 +77,7 @@ export const addFeedComment = (req: Request, res: Response) => {
   const { feedId } = req.params;
   const { memberId, comment } = req.body;
 
-  const numberFeedId = Number(feedId)
-  insertFeedComment(memberId, numberFeedId, comment, (result: any) => {
+  insertFeedComment(memberId, Number(feedId), comment, (result: any) => {
     if(!result) {
       return res.status(401).json({success: false, message: "FeedController.addFeedComment: DB Error"})
     }
@@ -90,13 +89,22 @@ export const addFeedComment = (req: Request, res: Response) => {
   })
 }
 
+export const removeFeedComment = (req: Request, res: Response) => {
+  const { feedId, commentId } = req.params;
+  const {memberId} = req.body;
 
+  deleteFeedComment(Number(commentId), Number(feedId), memberId, (result: any) => {
+    if(!result) {
+      return res.status(401).json({success: false, message: "FeedController.removeFeedComment: DB Error"})
+    }
+    return res.status(200).json({message: "Comment removed successfully"});
+  });
+}
 
 export const getFeedLike = (req: Request, res: Response) => {
   const { feedId } = req.params;
-  const numberFeedId = Number(feedId);  
 
-  selectFeedLike(numberFeedId, (result: any) => {
+  selectFeedLike(Number(feedId), (result: any) => {
     if (!result || result.length === 0) {
       return res.status(200).json({ likeMemberIds: [] });
     }
@@ -105,15 +113,13 @@ export const getFeedLike = (req: Request, res: Response) => {
   });
 }
 
-
 export const addFeedLike = (req: Request, res: Response) => {
   const { feedId } = req.params;
   const { userId } = req.body;
 
-  const numberFeedId = Number(feedId)
   const memberId = userId;
 
-  insertFeedLike(memberId, numberFeedId, (result: any) => {
+  insertFeedLike(memberId, Number(feedId), (result: any) => {
     if(!result) {
       return res.status(401).json({success: false, message: "FeedController.addFeedLike: DB Error"})
     }
@@ -125,10 +131,9 @@ export const removeFeedLike = (req: Request, res: Response) => {
   const { feedId } = req.params;
   const { userId } = req.body;
 
-  const numberFeedId = Number(feedId)
   const memberId = userId;
 
-  deleteFeedLike(memberId, numberFeedId, (result: any) => {
+  deleteFeedLike(memberId, Number(feedId), (result: any) => {
     if (!result) {
       return res.status(401).json({ success: false, message: "FeedController.removeFeedLike: DB Error" });
     }
