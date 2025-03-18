@@ -63,7 +63,8 @@ const FeedCommentsPart = ({
   // 댓글 삭제
   const handleDeleteComment = async (commentId: number, memberId: string) => {
     try {
-      await authAxios.delete(`/petstar/delete/${feedId}/${commentId}`, {data: {memberId}})
+      console.log(commentId)
+      socket.emit('delete_comment', {feedId, commentId, memberId});
     } catch(err) {
       console.error("FeedCommentsPart. handleDeleteComment: ", err);
     }
@@ -81,13 +82,17 @@ const FeedCommentsPart = ({
       setComments((prev) => [...prev, newComment]);
     })
 
+    socket.on('comment_deleted', ({feedId, commentId}) => {
+      setComments((prev) => prev.filter((comment) => comment.commentId !== commentId));
+    })
+
     return () => {
       socket.off('receive_comments');
       socket.off('receive_comment');
+      socket.off('comment_deleted');
     };
 
   }, [feedId])
-
   return (
     <div className="pt-4 border-t">
       <h2 className="relative text-lg font-semibold mb-2 flex justify-between">
