@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
+import { io } from "../app";
 import { deleteFeedComment, deleteFeedLike, insertFeed, insertFeedComment, insertFeedLike, selectFeedComments, selectFeedLike } from "../model/Feed";
 import { selectFeeds } from "../model/Feed";
 
 import { Feed } from "../types/user";
+import { Server, Socket } from "socket.io";
 
 export const getFeeds = (req: Request, res: Response, next: NextFunction) => {
   selectFeeds((err, results) => {
@@ -54,40 +56,40 @@ export const addFeed = (req: Request, res: Response) => {
   }
 }
 
-export const getFeedComments = (req: Request, res: Response) => {
-  const { feedId } = req.params;
+// export const getFeedComments = (req: Request, res: Response) => {
+//   const { feedId } = req.params;
 
-  selectFeedComments(Number(feedId), (result: any) => {
-    if(!result) {
-      return res.status(401).json({success: false, message: "FeedController.getFeedComments: DB Error"})
-    }
-    const comments = result.map((comment: any) => (
-      {
-        commentId: comment.id,
-        memberId: comment.member_id,
-        comment: comment.comment
-      }
-    ))
-    return res.status(200).json({comments: comments});
-  });
+//   selectFeedComments(Number(feedId), (result: any) => {
+//     if(!result) {
+//       return res.status(401).json({success: false, message: "FeedController.getFeedComments: DB Error"})
+//     }
+//     const comments = result.map((comment: any) => (
+//       {
+//         commentId: comment.id,
+//         memberId: comment.member_id,
+//         comment: comment.comment
+//       }
+//     ))
+//     return res.status(200).json({comments: comments});
+//   });
 
-}
+// }
 
-export const addFeedComment = (req: Request, res: Response) => {
-  const { feedId } = req.params;
-  const { memberId, comment } = req.body;
-
-  insertFeedComment(memberId, Number(feedId), comment, (result: any) => {
-    if(!result) {
-      return res.status(401).json({success: false, message: "FeedController.addFeedComment: DB Error"})
-    }
-    const addCommentInfo = {
-      memberId: result.member_id,
-      comment: result.comment
-    }
-    return res.json({success: true, addCommentInfo: { addCommentInfo }})
-  })
-}
+// export const addFeedComment = (req: Request, res: Response) => {
+//   const { feedId } = req.params;
+//   const { memberId, comment } = req.body;
+//   insertFeedComment(memberId, Number(feedId), comment, (result: any) => {
+//     if(!result) {
+//       return res.status(401).json({success: false, message: "FeedController.addFeedComment: DB Error"})
+//     }
+//     const newComment = {
+//       commentId: result.id,
+//       memberId: result.member_id,
+//       comment: result.comment
+//     }
+//     return res.json({success: true, newComment: { newComment }})
+//   })
+// }
 
 export const removeFeedComment = (req: Request, res: Response) => {
   const { feedId, commentId } = req.params;
@@ -139,4 +141,49 @@ export const removeFeedLike = (req: Request, res: Response) => {
     }
     return res.status(200).json({ message: "Like removed successfully" });
   });
+}
+
+export const setupSocket = (io: Server) => {
+  io.on("connection", (socket: Socket) => {
+    console.log("User Connected: ", socket.id);
+
+    // feedId에 해당하는 댓글 불러오기
+    socket.on('get_comments', (feedId: number) => {
+      selectFeedComments(feedId, (result: any) => {
+        if(!result) {
+          return console.error("Comment 조회 실패");
+        }
+        const comments = result.map((comment: any) => (
+          {
+            commentId: comment.id,
+            memberId: comment.member_id,
+            comment: comment.comment
+          }
+        ))
+        socket.emit('receive_comments', comments);
+      })
+    })
+
+    // 댓글 추가
+    socket.on('send_comment', ({feedId, inputCommentData}) => {
+      insertFeedComment(
+        inputCommentData.memberId,
+        Number(feedId),
+        inputCommentData.comment,
+        (result: any) => {
+        if(!result) {
+          return console.error("Comment 추가 실패");
+        }
+        
+        const newComment = {
+          commentId: result.insertId,
+          memberId: inputCommentData.memberId,
+          comment: inputCommentData.comment
+        }
+
+        socket.emit('receive_comment', newComment);
+        socket.broadcast.emit('receive_comment', newComment); // 모든 다른 소켓에게 전송
+      })
+    })
+  })
 }

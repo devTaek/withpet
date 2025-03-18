@@ -12,7 +12,6 @@ interface FeedDetailProps {
 
 const FeedDetail = ({ feed }: FeedDetailProps) => {
   const userId = useSelector((state: RootState) => state.user.user?.userId);
-  const [comments, setComments] = useState<FeedComments[]>([]);
   const [likeMembers, setLikeMembers] = useState<string[]>([]);
 
   const likeState = useMemo(() => likeMembers.includes(userId), [likeMembers, userId]);
@@ -20,10 +19,8 @@ const FeedDetail = ({ feed }: FeedDetailProps) => {
   useEffect(() => {
     const fetchFeedDetails = async () => {
       try {
-        const commentsResponse = await axios.get(`http://localhost:5000/api/petstar/comments/${feed.id}`);
         const likesResponse = await axios.get(`http://localhost:5000/api/petstar/like/${feed.id}`);
         
-        setComments(commentsResponse.data.comments);
         setLikeMembers(likesResponse.data.likeMemberIds);
       } catch(error) {
         console.error("Petstar. fetchFeedDetails: 요청 실패", error);
@@ -50,7 +47,6 @@ const FeedDetail = ({ feed }: FeedDetailProps) => {
       {/* 댓글 & 좋아요 */}
       <FeedCommentsPart
         feedId={feed.id}
-        comments={comments}
         likeMembers={likeMembers}
         setLikeMembers={setLikeMembers}
         likeState={likeState}

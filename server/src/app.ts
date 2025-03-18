@@ -7,6 +7,7 @@ import router from './routes'
 
 import http from 'http'
 import { Server } from 'socket.io';
+import { setupSocket } from './controller/FeedController';
 
 const app = express();
 dotenv.config();
@@ -39,18 +40,9 @@ const io = new Server(server, {
   }
 });
 
-io.on("connection", (socket) => {
-  console.log(`User Connected: ${socket.id}`);
+setupSocket(io);
 
-  socket.on('send_message', (message) => {
-    io.emit('receive_message', message);
-  });
-
-  socket.on('disconnect', () => {
-    console.log("User Disconnected");
-  });
-});
-
+export { io };
 
 // 포트 5000에서 서버 실행
 const PORT = process.env.PORT || 5000;

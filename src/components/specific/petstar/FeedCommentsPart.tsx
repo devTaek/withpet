@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import io, { Socket } from 'socket.io-client';
 
 import { FeedComments } from '../../../types/interfaces/feed';
@@ -6,43 +6,30 @@ import authAxios from '../../../utils/authAxios';
 import { SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
+import axios from 'axios';
 
 interface FeedCommentsPartProps {
   feedId: number;
-  comments: FeedComments[];
   likeMembers: string[];
   setLikeMembers: React.Dispatch<SetStateAction<string[]>>;
   likeState: boolean;
 }
 
-  const socket = io("http://localhost:5000");
+const socket = io("http://localhost:5000");
 
 const FeedCommentsPart = ({
   feedId,
-  comments,
   likeMembers,
   setLikeMembers,
   likeState
 }: FeedCommentsPartProps) => {
   const userId = useSelector((state: RootState) => state.user.user?.userId);
-  const [message, setMessage] = useState("");
-  const [receivedMessage, setReceivedMessage] = useState('');
-
-  
-  const { register, handleSubmit } = useForm<FeedComments>();
+  const { register, handleSubmit, reset } = useForm<FeedComments>();
   const [isHovered, setIsHovered] = useState(false);
+  
+  const [comments, setComments] = useState<FeedComments[]>([]);
 
-
-  const sendMessage = () => {
-    socket.emit('send_message', message);
-  };
-  useEffect(() => {
-    socket.on('receive_message', (message) => {
-      setReceivedMessage(message);
-    }
-    )
-  }, [socket]);
-
+  // 좋아요
   const handleLike = async () => {
     try {
       if(likeState === false) {
@@ -59,6 +46,21 @@ const FeedCommentsPart = ({
     }
   }
 
+  // 댓글 추가
+  const onSubmit = async (data: FeedComments) => {
+    let inputCommentData = {
+      memberId: userId,
+      comment: data.comment,
+    }
+    try {
+      socket.emit('send_comment', {feedId, inputCommentData});
+      reset();
+    } catch(error) {
+      console.error("FeedCommentsPart. onSubmit: ", error);
+    }
+  }
+
+  // 댓글 삭제
   const handleDeleteComment = async (commentId: number, memberId: string) => {
     try {
       await authAxios.delete(`/petstar/delete/${feedId}/${commentId}`, {data: {memberId}})
@@ -67,26 +69,27 @@ const FeedCommentsPart = ({
     }
   }
 
-  const onSubmit = async (data: FeedComments) => {
-    let inputCommentData = {
-      memberId: userId,
-      comment: data.comment,
-    }
-    try {
-      await authAxios.post(`/petstar/comment/${feedId}`, inputCommentData);
-      
-    } catch(error) {
-      console.error("FeedCommentsPart. onSubmit: ", error);
-    }
-  }
+  // 전체 댓글 불러오기
+  useEffect(() => {
+    socket.emit('get_comments', feedId);
+
+    socket.on('receive_comments', (data: FeedComments[]) => {
+      setComments(data);
+    });
+
+    socket.on('receive_comment', (newComment: FeedComments) => {
+      setComments((prev) => [...prev, newComment]);
+    })
+
+    return () => {
+      socket.off('receive_comments');
+      socket.off('receive_comment');
+    };
+
+  }, [feedId])
 
   return (
     <div className="pt-4 border-t">
-      <div>
-        <input value={message} onChange={(e) => setMessage(e.target.value)} />
-        <button onClick={sendMessage}>SEND</button>
-        <p>Received Message: {receivedMessage}</p>
-      </div>
       <h2 className="relative text-lg font-semibold mb-2 flex justify-between">
         댓글
         <button
@@ -113,8 +116,8 @@ const FeedCommentsPart = ({
         }}
       >
           {comments.length > 0 ? (
-            comments.map((comment, index) => (
-              <li key={index} className="flex items-center justify-between  bg-gray-100 p-2 rounded-md">
+            comments.map((comment) => (
+              <li key={comment.commentId} className="flex items-center justify-between  bg-gray-100 p-2 rounded-md">
                 <div>
                   <span className="mr-2 text-sm">{comment.memberId}</span>
                   <span className="text-sm">{comment.comment || "내용 없음"}</span>
@@ -154,14 +157,3 @@ const FeedCommentsPart = ({
 }
 
 export default FeedCommentsPart
-
-
-  // useEffect(() => {
-  //   const socket = io("http://localhost:5000");
-  //   socket.on("connect", () => {
-  //     console.log("WebSocket 연결: ", socket.id);
-  //   })
-  //   return () => {
-  //     socket.disconnect();
-  //   }
-  // }, [])
