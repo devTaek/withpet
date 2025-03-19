@@ -29,7 +29,6 @@ const FeedCommentsPart = ({
   
   const [comments, setComments] = useState<FeedComments[]>([]);
 
-  // 좋아요
   const handleLike = async () => {
     try {
       if(likeState === false) {
@@ -46,53 +45,57 @@ const FeedCommentsPart = ({
     }
   }
 
-  // 댓글 추가
   const onSubmit = async (data: FeedComments) => {
     let inputCommentData = {
       memberId: userId,
       comment: data.comment,
     }
     try {
-      socket.emit('send_comment', {feedId, inputCommentData});
+      socket.emit('add_comment', {feedId, inputCommentData});
       reset();
     } catch(error) {
       console.error("FeedCommentsPart. onSubmit: ", error);
     }
   }
 
-  // 댓글 삭제
   const handleDeleteComment = async (commentId: number, memberId: string) => {
     try {
-      console.log(commentId)
       socket.emit('delete_comment', {feedId, commentId, memberId});
     } catch(err) {
       console.error("FeedCommentsPart. handleDeleteComment: ", err);
     }
   }
 
-  // 전체 댓글 불러오기
   useEffect(() => {
     socket.emit('get_comments', feedId);
 
     socket.on('receive_comments', (data: FeedComments[]) => {
       setComments(data);
-    });
-
-    socket.on('receive_comment', (newComment: FeedComments) => {
-      setComments((prev) => [...prev, newComment]);
-    })
-
-    socket.on('comment_deleted', ({feedId, commentId}) => {
-      setComments((prev) => prev.filter((comment) => comment.commentId !== commentId));
-    })
+    }
+    )
 
     return () => {
       socket.off('receive_comments');
+    }
+  }, [feedId])
+
+  useEffect(() => {
+    const addComment = (newComment: FeedComments) => {
+      setComments((prev) => [...prev, newComment]);
+    }
+    const deleteComment = ({commentId}: {commentId: number}) => {
+      setComments((prev) => prev.filter((comment) => comment.commentId !== commentId));
+    }
+
+    socket.on('receive_addComment', addComment);
+    socket.on('receive_deleteComment', deleteComment)
+
+    return () => {
       socket.off('receive_comment');
       socket.off('comment_deleted');
     };
 
-  }, [feedId])
+  }, [])
   return (
     <div className="pt-4 border-t">
       <h2 className="relative text-lg font-semibold mb-2 flex justify-between">

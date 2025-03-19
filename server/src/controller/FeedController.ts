@@ -56,43 +56,6 @@ export const addFeed = (req: Request, res: Response) => {
   }
 }
 
-// export const getFeedComments = (req: Request, res: Response) => {
-//   const { feedId } = req.params;
-
-//   selectFeedComments(Number(feedId), (result: any) => {
-//     if(!result) {
-//       return res.status(401).json({success: false, message: "FeedController.getFeedComments: DB Error"})
-//     }
-//     const comments = result.map((comment: any) => (
-//       {
-//         commentId: comment.id,
-//         memberId: comment.member_id,
-//         comment: comment.comment
-//       }
-//     ))
-//     return res.status(200).json({comments: comments});
-//   });
-
-// }
-
-// export const addFeedComment = (req: Request, res: Response) => {
-//   const { feedId } = req.params;
-//   const { memberId, comment } = req.body;
-//   insertFeedComment(memberId, Number(feedId), comment, (result: any) => {
-//     if(!result) {
-//       return res.status(401).json({success: false, message: "FeedController.addFeedComment: DB Error"})
-//     }
-//     const newComment = {
-//       commentId: result.id,
-//       memberId: result.member_id,
-//       comment: result.comment
-//     }
-//     return res.json({success: true, newComment: { newComment }})
-//   })
-// }
-
-
-
 export const getFeedLike = (req: Request, res: Response) => {
   const { feedId } = req.params;
 
@@ -133,32 +96,8 @@ export const removeFeedLike = (req: Request, res: Response) => {
   });
 }
 
-// export const removeFeedComment = (req: Request, res: Response) => {
-//   const { feedId, commentId } = req.params;
-//   const {memberId} = req.body;
-
-//   deleteFeedComment(Number(commentId), Number(feedId), memberId, (result: any) => {
-//     if(!result) {
-//       return res.status(401).json({success: false, message: "FeedController.removeFeedComment: DB Error"})
-//     }
-//     return res.status(200).json({message: "Comment removed successfully"});
-//   });
-// }
-
 export const setupSocket = (io: Server) => {
   io.on("connection", (socket: Socket) => {
-    console.log("User Connected: ", socket.id);
-
-    // 댓글 삭제
-    socket.on('delete_comment', ({commentId, feedId, memberId}) => {
-      deleteFeedComment(Number(commentId), Number(feedId), memberId, (result: any) => {
-        if(!result) {
-          return console.error("Comment 삭제 실패");
-        }
-
-        io.emit('comment_deleted', {feedId, commentId});
-      })
-    })
 
     // feedId에 해당하는 댓글 불러오기
     socket.on('get_comments', (feedId: number) => {
@@ -178,7 +117,7 @@ export const setupSocket = (io: Server) => {
     })
 
     // 댓글 추가
-    socket.on('send_comment', ({feedId, inputCommentData}) => {
+    socket.on('add_comment', ({feedId, inputCommentData}) => {
       insertFeedComment(
         inputCommentData.memberId,
         Number(feedId),
@@ -196,6 +135,17 @@ export const setupSocket = (io: Server) => {
 
         socket.emit('receive_comment', newComment);
         socket.broadcast.emit('receive_comment', newComment); // 모든 다른 소켓에게 전송
+      })
+    })
+
+    // 댓글 삭제
+    socket.on('delete_comment', ({commentId, feedId, memberId}) => {
+      deleteFeedComment(Number(commentId), Number(feedId), memberId, (result: any) => {
+        if(!result) {
+          return console.error("Comment 삭제 실패");
+        }
+
+        io.emit('receive_deleteComment', {feedId, commentId});
       })
     })
   })
