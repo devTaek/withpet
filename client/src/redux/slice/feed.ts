@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { FeedState } from "../../types/redux";
-import { setItem } from "../../utils/storage";
 import { Feed } from "../../types/interfaces/feed";
 
 /** authState 초기값 */

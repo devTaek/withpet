@@ -34,7 +34,6 @@ const Petstar = () => {
       } else {
         setAddFeed(true);
       }
-      // onClose();
     }
 
   const viewFeed = (feed: Feed) => {
@@ -51,7 +50,6 @@ const Petstar = () => {
       try {
         const response = await axios.get('http://localhost:5000/api/petstar');
         
-        // 리액트 상태 -> 리덕스 상태로 변경
         dispatch(feedActions.setFeed(response.data.feeds));
       } catch (error) {
         console.error("Petstar. fetchFeeds: 요청 실패", error);
@@ -59,7 +57,7 @@ const Petstar = () => {
     }
 
     fetchFeeds();
-  }, [feeds.length]);
+  }, [dispatch]);
 
   return (
     <div className="h-[calc(100vh-4rem)] mt-16 flex items-center justify-center p-10 gap-10">

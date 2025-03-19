@@ -1,4 +1,4 @@
-import { Feed, FeedComments } from "../../../types/interfaces/feed";
+import { Feed } from "../../../types/interfaces/feed";
 import FeedImagePart from "./FeedImagePart";
 import FeedCommentsPart from "./FeedCommentsPart";
 import { useEffect, useMemo, useState } from "react";

@@ -1,12 +1,11 @@
-import { useForm, SubmitHandler } from 'react-hook-form';
-import io, { Socket } from 'socket.io-client';
+import { useForm } from 'react-hook-form';
+import io from 'socket.io-client';
 
 import { FeedComments } from '../../../types/interfaces/feed';
 import authAxios from '../../../utils/authAxios';
 import { SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
-import axios from 'axios';
 
 interface FeedCommentsPartProps {
   feedId: number;
