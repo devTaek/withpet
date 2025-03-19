@@ -91,11 +91,12 @@ const FeedCommentsPart = ({
     socket.on('receive_deleteComment', deleteComment)
 
     return () => {
-      socket.off('receive_comment');
-      socket.off('comment_deleted');
+      socket.off('receive_addComment');
+      socket.off('receive_deletedComment');
     };
 
   }, [])
+
   return (
     <div className="pt-4 border-t">
       <h2 className="relative text-lg font-semibold mb-2 flex justify-between">

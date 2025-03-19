@@ -112,17 +112,13 @@ export const setupSocket = (io: Server) => {
             comment: comment.comment
           }
         ))
-        socket.emit('receive_comments', comments);
+        io.emit('receive_comments', comments);
       })
     })
 
     // 댓글 추가
     socket.on('add_comment', ({feedId, inputCommentData}) => {
-      insertFeedComment(
-        inputCommentData.memberId,
-        Number(feedId),
-        inputCommentData.comment,
-        (result: any) => {
+      insertFeedComment(inputCommentData.memberId, Number(feedId), inputCommentData.comment, (result: any) => {
         if(!result) {
           return console.error("Comment 추가 실패");
         }
@@ -133,8 +129,7 @@ export const setupSocket = (io: Server) => {
           comment: inputCommentData.comment
         }
 
-        socket.emit('receive_comment', newComment);
-        socket.broadcast.emit('receive_comment', newComment); // 모든 다른 소켓에게 전송
+        io.emit('receive_addComment', newComment);
       })
     })
 
