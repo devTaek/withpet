@@ -32,20 +32,23 @@ export function NavMenu({onClose} : NavMenuProps) {
       <div className="fixed inset-0 flex items-center justify-center z-20">
         <nav className="navigation bg-white p-8 rounded-3xl shadow-lg w-[80%] max-w-[600px] sm:max-w-[40vw] relative">
           <li className='top-4 right-4 text-right'>
-            <button onClick={onClose} className="p-4 text-xl font-bold text-gray-700">X</button>
+            <button onClick={onClose} className="p-4 text-xl font-black text-gray-700">X</button>
           </li>
           <ul className='flex flex-col gap-6 text-4xl font-black text-center'>
             <li>
               <Link to="/petstar" className='hover:text-blue-500 transition-colors' onClick={onClose}>PETSTAR</Link>
             </li>
             <li>
-              <Link to="/petwalk" className='hover:text-blue-500 transition-colors' onClick={onClose}>PETWALK</Link>
+              <Link to="/petwalk" className='hover:text-green-500 transition-colors' onClick={onClose}>PETWALK</Link>
             </li>
             <li>
-              <Link to="/petshop" className='hover:text-blue-500 transition-colors' onClick={onClose}>PETSHOP</Link>
+              <Link to="/petshop" className='hover:text-red-500 transition-colors' onClick={onClose}>PETSHOP</Link>
+            </li>
+            <li>
+              <Link to="#" className='hover:text-purple-500 transition-colors' onClick={onClose}>CONTACT</Link>
             </li>
             <li onClick={privatePageBtn}>
-              <Link to={`/mypage/${userId}`} className='hover:text-blue-500 transition-colors' onClick={onClose}>MYPAGE</Link>
+              <Link to={`/mypage/${userId}`} className='hover:text-yellow-500 transition-colors' onClick={onClose}>MYPAGE</Link>
             </li>
           </ul>
         </nav>

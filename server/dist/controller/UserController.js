@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updatePet = exports.updateUser = exports.registerPet = exports.register = exports.userData = exports.refreshToken = exports.verifyAccessToken = void 0;
+exports.deleteUser = exports.updatePet = exports.updateUser = exports.registerPet = exports.register = exports.refreshToken = exports.verifyAccessToken = void 0;
 const User_1 = require("../model/User");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -70,17 +70,6 @@ const refreshToken = (req, res) => {
     }
 };
 exports.refreshToken = refreshToken;
-/** 마이페지이(user + pet) */
-const userData = (req, res) => {
-    const { userId } = req.params;
-    (0, User_1.mypageData)(userId, (result) => {
-        if (!result) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
-        return res.json({ userData: result });
-    });
-};
-exports.userData = userData;
 /** 회원가입 */
 const register = (req, res) => {
     const { userId, password, name, email, address, phoneNumber } = req.body;
@@ -101,8 +90,8 @@ const register = (req, res) => {
 exports.register = register;
 /* pet 정보 추가 */
 const registerPet = (req, res) => {
-    const { userId, name, species, age, birth, gender, weight, food, activity } = req.body;
-    (0, User_1.insertPet)(userId, name, species, age, birth, gender, weight, food, activity, (result) => {
+    const { userId, name, species, birth, gender, weight, food, activity } = req.body;
+    (0, User_1.insertPet)(userId, name, species, birth, gender, weight, food, activity, (result) => {
         if (!result) {
             return res.status(401).json({ message: 'UserController. pet 정보 추가 오류', success: false });
         }
@@ -155,7 +144,6 @@ exports.updateUser = updateUser;
 /** pet 추가 업데이트  */
 const updatePet = (req, res) => {
     const { userId, petId, name, species, birth, gender, weight, food, activity } = req.body;
-    console.log(petId);
     (0, User_1.updatePetInfo)(userId, petId, name, species, birth, gender, weight, food, activity, (result) => {
         if (!result) {
             return res.status(401).json({ message: "Invalid edit pet data" });
@@ -170,7 +158,6 @@ const updatePet = (req, res) => {
             petFood: result.pet_food,
             petActivity: result.pet_activity,
         };
-        console.log(editPetInfo);
         return res.json({ success: true, updatePet: editPetInfo });
     });
 };

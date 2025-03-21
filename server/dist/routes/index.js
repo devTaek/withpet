@@ -22,10 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const UserController = __importStar(require("../controller/UserController"));
 const AuthContrller = __importStar(require("../controller/AuthController"));
+const FeedController = __importStar(require("../controller/FeedController"));
+const multer_1 = __importDefault(require("../middleware/multer"));
 const router = (0, express_1.Router)();
 // 로그인
 router.post('/login', AuthContrller.login);
@@ -34,10 +39,19 @@ router.post('/logout', AuthContrller.logout);
 router.get('/access-token', UserController.verifyAccessToken);
 router.get('/refresh-token', UserController.refreshToken);
 /* 사용자 정보 */
+router.get('/user/:userId', UserController.verifyAccessToken);
 router.post('/register', UserController.register);
-router.get('/user/:userId', UserController.verifyAccessToken, UserController.userData);
 router.post('/register-pet', UserController.verifyAccessToken, UserController.registerPet);
 router.patch('/update-user', UserController.verifyAccessToken, UserController.updateUser);
 router.patch('/update-pet', UserController.verifyAccessToken, UserController.updatePet);
 router.delete('/delete', UserController.verifyAccessToken, UserController.deleteUser);
+/* MyStar */
+router.get('/petstar', FeedController.getFeeds);
+// router.get('/petstar/comments/:feedId', FeedController.getFeedComments);
+router.get('/petstar/like/:feedId', FeedController.getFeedLike);
+router.post('/petstar/add', multer_1.default.array('feedImg'), FeedController.addFeed);
+// router.post('/petstar/comment/:feedId', FeedController.addFeedComment);
+router.post('/petstar/like/:feedId', FeedController.addFeedLike);
+router.post('/petstar/unlike/:feedId', FeedController.removeFeedLike);
+// router.delete('/petstar/delete/:feedId/:commentId', FeedController.removeFeedComment);
 exports.default = router;

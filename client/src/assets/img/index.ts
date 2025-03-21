@@ -10,6 +10,7 @@ import PetstarImg6 from './pexels-gochrisgoxyz-1686790.jpg'
 import PetstarImg7 from './woman-7009477_1280.jpg'
 import PetstarImg8 from './pexels-n-voitkevich-4641868.jpg'
 
+import PetWalkBanner from './pexels-josh-hild-1270765-16420806.jpg'
 
 import PetshopImg1 from './pexels-caroline-vergauwen-34162895-7075834.jpg'
 import PetshopImg2 from './pexels-josh-hild-1270765-9700135.jpg'
@@ -33,6 +34,9 @@ interface Images {
     img7: string,
     img8: string,
   },
+  Walk: {
+    img1: string,
+  },
   Shop: {
     Toys: string[], // 장난감
     Snacks: string[], // 간식
@@ -40,7 +44,7 @@ interface Images {
   }
 }
 
-const Images:Images = {
+const Img:Images = {
   Main: {
     logo: Logo,
     Img: MainImg
@@ -55,6 +59,9 @@ const Images:Images = {
     img7: PetstarImg7,
     img8: PetstarImg8,
   },
+  Walk: {
+    img1: PetWalkBanner,
+  },
   Shop: {
     Toys: [PetshopImg1, PetshopImg2], // 장난감
     Snacks: [PetshopImg3, PetshopImg4], // 간식
@@ -62,4 +69,4 @@ const Images:Images = {
   }
 }
 
-export default Images;
+export default Img;

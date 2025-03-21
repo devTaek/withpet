@@ -7,7 +7,7 @@ import AddFeed from "../components/specific/petstar/AddFeed";
 
 import { toast } from "react-toastify";
 import { IoMdAdd } from "react-icons/io";
-import Images from '../assets/img';
+import Img from '../assets/img';
 
 import Modal from "../components/common/Modal";
 import FeedDetail from "../components/specific/petstar/FeedDetail";
@@ -60,15 +60,15 @@ const Petstar = () => {
   }, [dispatch]);
 
   return (
-    <div className="h-[calc(100vh-4rem)] mt-16 flex items-center justify-center p-10 gap-10">
+    <div className="h-[calc(100vh-8rem)] mt-16 flex items-center justify-center p-10 gap-10">
       {/* 고정 이미지 */}
       <div className="w-1/3 h-full hidden md:block">
-        <img src={Images.Star.img8} alt="" className="w-full h-full max-h-screen" />
+        <img src={Img.Star.img8} alt="" className="w-full h-full max-h-screen" />
       </div>
 
       {/* 리스트 이미지 */}
       <div className="relative w-2/3 h-full overflow-hidden">
-        <div className="w-full font-bold text-4xl p-2 text-center">PETSTAR</div>
+        <div className="w-full font-black text-4xl p-2 text-center">PETSTAR</div>
         <div className="h-full overflow-auto scrollbar-hide">
           <ul className="h-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {feeds?.map((feed: Feed, id) => (

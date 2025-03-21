@@ -5,11 +5,11 @@ import { authActions } from '../../redux/slice/auth';
 
 import { RootState } from '../../redux/store/store';
 
-import Images from '../../assets/img/index'
 import { NavMenu } from '../specific/NavMenu';
 
 import ThemeButton from './ThemeButton';
 import Auth from '../specific/Auth';
+import Img from '../../assets/img/index';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -39,7 +39,7 @@ const Header = () => {
       <div className="flex w-full max-w-[1280px] h-full mx-auto items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className='logo flex items-center'>
           <Link to="/">
-            <img className='w-8 h-8 sm:w-10 sm:h-10' src={Images.Main.logo} alt="Logo" />
+            <img className='w-8 h-8 sm:w-10 sm:h-10' src={Img.Main.logo} alt="Logo" />
           </Link>
           <button onClick={handleMenuToggle} className="ml-4 cursor-pointer text-lg sm:text-xl">
             {view ? '' : '⌄'}

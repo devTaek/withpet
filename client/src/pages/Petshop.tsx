@@ -1,5 +1,5 @@
 import { useReducer } from 'react'
-import Images from '../assets/img';
+import Img from '../assets/img';
 
 interface State {
   view: boolean;
@@ -35,10 +35,10 @@ const Petshop = () => {
   const shopMenus: ('Toys' | 'Snacks' | 'Supplies')[] = ['Toys', 'Snacks', 'Supplies']
 
   return (
-    <div className='h-[calc(100vh-4rem)] mt-16 flex items-center justify-center p-10 gap-10'>
+    <div className='h-[calc(100vh-8rem)] mt-16 flex items-center justify-center p-10 gap-10'>
 
       <div className='w-2/3 h-full overflow-hidden'>
-        <div className='w-full font-bold text-4xl p-2 text-center green:text-black'>PETSHOP -
+        <div className='w-full font-black text-4xl p-2 text-center green:text-black'>PETSHOP -
         <button onClick={() => {dispatch({type: 'TOGGLE_MENU'})}} className="ml-4 cursor-pointer text-lg sm:text-xl">
           {state.view ? '^' : '⌄'} 
           {state.view && 
@@ -52,7 +52,7 @@ const Petshop = () => {
       <div className='h-full overflow-auto scrollbar-hide'>
         <ul className='h-full grid grid-cols-3 gap-5'>
           {
-            Images.Shop[state.selectedCategory].map((img, id) => (
+            Img.Shop[state.selectedCategory].map((img, id) => (
               <li key={id} className='transform transition duration-300 ease-in-out hover:scale-105'>
                 <img src={img} alt="" />
               </li>
@@ -64,7 +64,7 @@ const Petshop = () => {
       {/* 고정 이미지 */}
       </div>
       <div className='w-1/3 h-full'>
-        <img src={Images.Shop.Supplies[1]} alt="" className='w-full h-full max-h-screen'/>
+        <img src={Img.Shop.Supplies[1]} alt="" className='w-full h-full max-h-screen'/>
       </div>
     </div>
   )

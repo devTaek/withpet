@@ -19,7 +19,6 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 /** 로그인 (회원정보 찾기) */
 const login = (req, res) => {
     const { userId, userPw } = req.body;
-    // console.log('Authorization Header:', req.headers['authorization']);
     (0, Auth_1.select)(userId, function (result) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!result) {
@@ -58,10 +57,10 @@ const login = (req, res) => {
                         secure: false, // http 사용 (https : true)
                         httpOnly: true, // 자바스크립트 접근 불가
                     });
-                    (0, Auth_1.selectPet)(userId, (result) => __awaiter(this, void 0, void 0, function() {
-                        const isPetState = result.length;
+                    (0, Auth_1.selectPet)(userId, (result) => __awaiter(this, void 0, void 0, function* () {
                         if (result) {
                             user.pet = result.map((pet) => ({
+                                petId: pet.id,
                                 petName: pet.pet_name,
                                 petSpecies: pet.pet_species,
                                 petBirth: pet.pet_birth,
@@ -71,7 +70,7 @@ const login = (req, res) => {
                                 petActivity: pet.pet_activity,
                             }));
                         }
-                        return res.send({ accessToken, user, isPetState });
+                        return res.send({ accessToken, user });
                     }));
                 }
                 catch (error) {
