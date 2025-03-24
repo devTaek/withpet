@@ -24,29 +24,8 @@ const Walk = () => {
     setCurrentPage(page);
   };
 
-  // useEffect(() => {
-  //   let container = document.getElementById("map");
-  //   let options = {
-  //     center: new window.kakao.maps.LatLng(37.5665, 126.9780), // 서울 중심으로 지도 초기화
-  //     level: 10, // 확대/축소 수준
-  //   };
-
-  //   let map = new window.kakao.maps.Map(container, options); // 지도 객체 생성
-
-  //   // 현재 페이지에 해당하는 산책로에 마커 추가
-  //   currentItems.forEach((walk) => {
-  //     let markerPosition = new window.kakao.maps.LatLng(walk.latitude, walk.longitude);
-  //     let marker = new window.kakao.maps.Marker({
-  //       position: markerPosition,
-  //     });
-  //     marker.setMap(map); // 마커를 지도에 표시
-  //   });
-  // }, [currentPage]); // 페이지 변경 시마다 마커 업데이트
-
-
-  
   return (
-    <div className="flex flex-col h-full items-center justify-center p-6 rounded-lg">
+    <div className="flex flex-col h-full items-center rounded-lg">
       <ul className="w-full space-y-4">
         {currentItems.map((walk) => (
           <li key={walk.id} className="p-4 bg-white rounded-lg">
@@ -58,7 +37,7 @@ const Walk = () => {
 
       {/* 페이지네이션 */}
       <div className="flex gap-4 mt-6">
-        {/* {Array.from({ length: Math.ceil(dummyWalkData.length / itemsPerPage) }, (_, index) => (
+        {Array.from({ length: Math.ceil(dummyWalkData.length / itemsPerPage) }, (_, index) => (
           <button
             key={index + 1}
             onClick={() => handlePageChange(index + 1)}
@@ -66,7 +45,7 @@ const Walk = () => {
           >
             {index + 1}
           </button>
-        ))} */}
+        ))}
       </div>
 
     </div>
