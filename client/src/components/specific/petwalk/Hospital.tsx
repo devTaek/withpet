@@ -26,26 +26,15 @@ const Hospital = () => {
     setCurrentPage(page)
   }
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         'http://openapi.seoul.go.kr:8088/70554d6e6e6861723932456779696a/xml/LOCALDATA_020301/1/5/'
-  //       )
+  
 
-  //       const hospitalList = response.data.LOCALDATA_020301.row.map((hospital: any) => ({
-  //         id: hospital.CTPRVN_NM + hospital.BSNS_TELNO,
-  //         name: hospital.HOSP_NM,
-  //         description: hospital.HOSP_ADDR,
-  //       }))
-  //       setHospitalData(hospitalList)
-  //     } catch (error) {
-  //       console.error('데이터를 가져오는 중 오류가 발생했습니다:', error)
-  //     }
-  //   }
-
-  //   fetchData()
-  // }, [])
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get('http://openapi.seoul.go.kr:8088/70554d6e6e6861723932456779696a/xml/LOCALDATA_020301/1/10/')
+  
+    }
+    fetchData()
+  }, [])
 
 
   return (

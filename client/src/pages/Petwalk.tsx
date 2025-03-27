@@ -21,7 +21,7 @@ const Petwalk = () => {
   }
 
   return (
-    <div className="flex flex-col h-[100vh] mt-16  items-center justify-start flex-grow p-10 gap-10">
+    <div className="flex flex-col h-full mt-16  items-center flex-grow p-10 gap-10">
       <div className="w-full  h-[calc(100vh-8rem)]">
         <img
           src={Img.Walk.img1}
@@ -31,6 +31,9 @@ const Petwalk = () => {
       </div>
 
       <div className="w-full h-full flex items-center justify-between gap-10">
+      
+      <KakaoMap keyword={keyword}/>
+
       <div className="w-1/2  h-[calc(100vh-4rem)] mt-32 p-10 overflow-hidden">
         <div className="w-full font-black text-4xl p-2 text-center green:text-black">PETWALK</div>
 
@@ -62,7 +65,6 @@ const Petwalk = () => {
         {selectedButton === "hospital" && <Hospital />}
       </div>
 
-      <KakaoMap keyword={keyword}/>
         
       </div>
     </div>
