@@ -1,6 +1,6 @@
-import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
+import { MapData } from '../../../types/interfaces/walk';
 
 declare global {
   interface Window {
@@ -8,8 +8,9 @@ declare global {
   }
 }
 
-interface KakaoMapProps {
-  keyword: string;
+// walkData 프롭스 타입 설정 필요
+interface Props {
+  mapData: MapData[]
 }
 
 interface MarkerType {
@@ -20,12 +21,11 @@ interface MarkerType {
   content: string;
 }
 
-const KakaoMap: React.FC<KakaoMapProps> = ({ keyword }) => {
+const KakaoMap: React.FC<Props> = ({mapData}) => {
   const { kakao } = window;
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
   const [markers, setMarkers] = useState<MarkerType[]>([]);
   const [info, setInfo] = useState<MarkerType | null>(null);
-
   const [location, setLocation] = useState<{ lat: number; lng: number}>({
     lat: 37.5665,
     lng: 126.9780,
@@ -38,71 +38,65 @@ const KakaoMap: React.FC<KakaoMapProps> = ({ keyword }) => {
     if(map) {
       if(navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
-          const lat = position.coords.latitude;
           const lng = position.coords.longitude;
+          const lat = position.coords.latitude;
 
-          setLocation({lat, lng});
-          map.setCenter(new kakao.maps.LatLng(lat, lng));
+          setLocation({lng, lat});
+          setTimeout(() => {
+            map.setCenter(new kakao.maps.LatLng(lat, lng)); // ✅ 약간의 지연 후 이동
+          }, 500);
         })
       }
     }
-
   }, [map]);
 
-  useEffect(() => {
-    if (!map) return;
-    searchPlaceApi();
-  }, [location]); // location이 변경될 때 API 호출
 
-  const searchPlaceApi = async () => {
-    let BASE_URL = process.env.REACT_APP_WALK_API_BASE_URL;
-    let SERVICE_KEY = process.env.REACT_APP_WALK_API_KEY;
-
-    try {
-      const url = `${BASE_URL}?serviceKey=${SERVICE_KEY}&pageNo=1&numOfRows=10&MobileOS=ETC&MobileApp=AppTest&_type=json&arrange=E&mapX=${location.lng}&mapY=${location.lat}&radius=5000&contentTypeId=12`;
-
-      const response = await axios.get(url);
-      const data = await response.data.response.body.items.item;
-
-      const markers = data.map((place: any) => ({
-        position: {
-          lat: Number(place.mapy),
-          lng: Number(place.mapx),
-        },
-        content: place.title
-      }))
-
-      setMarkers(markers);
-
-    } catch(error) {
-      console.error(error);
-    }
-  }
+    console.log(mapData)
+  let dummy_data = [
+    {
+      id: 1,
+      title: '첫번째',
+      lat: 37.5665,
+      lng: 126.9780,
+    },
+    {
+      id: 2,
+      title: '두번째',
+      lat: 37.5775,
+      lng: 126.9880,
+    },
+    {
+      id: 3,
+      title: '세번째',
+      lat: 37.5500,
+      lng: 126.9700,
+    },
+  ]
+  
 
   return (
-    <Map 
+    <Map
+      id="map"
       center={{
-        // 지도의 중심좌표
         lat: location.lat,
         lng: location.lng,
       }}
+      
       style={{
-        // 지도의 크기
         width: "50%",
         height: "600px",
       }}
-      level={5} // 지도의 확대 레벨
+      level={3}
       onCreate={setMap}
     >
-      {markers.map((marker) => (
+      {dummy_data.map((data) => (
         <MapMarker
-          key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
-          position={marker.position}
-          onClick={() => setInfo(marker)}
+          key={data.id}
+          position={{
+            lng: data.lng,
+            lat: data.lat
+          }}
         >
-          {info &&info.content === marker.content && (
-            <div style={{color:"#000"}}>{marker.content}</div>
-          )}
         </MapMarker>
       ))}
     </Map>

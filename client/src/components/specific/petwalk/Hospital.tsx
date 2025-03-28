@@ -1,66 +1,88 @@
-import axios from 'axios'
-import React, { useEffect, useState } from 'react'
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { MapData } from "../../../types/interfaces/walk";
 
-const dummyHospitalData = [
-  { id: 1, name: "서울 동물병원", description: "서울의 대표적인 동물병원입니다." },
-  { id: 2, name: "강남 동물병원", description: "강남에 위치한 믿을 수 있는 동물병원입니다." },
-  { id: 3, name: "홍대 동물병원", description: "홍대 인근에 위치한 동물병원입니다." },
-  { id: 4, name: "삼성동물병원", description: "서울 삼성동에 위치한 전문 동물병원입니다." },
-  { id: 5, name: "역삼동 동물병원", description: "역삼동에 있는 동물병원으로 최신 장비를 갖추고 있습니다." },
-  { id: 6, name: "명동 동물병원", description: "서울 명동에 있는 신뢰도 높은 동물병원입니다." },
-]
+interface Props {
+  setMapData: React.Dispatch<React.SetStateAction<MapData[]>>
+}
 
-const Hospital = () => {
-  const [hospitalData, setHospitalData] = useState<any[]>([]) // hospital 데이터를 상태로 저장
+interface HospitalData {
+  BPLCNM: string; // 병원 이름
+  RDNWHLADDR: string; // 주소
+  SITETEL?: string; // 전화번호 (없을 수도 있으므로 선택적)
+  X: string;
+  Y: string;
+  [key: string]: unknown;
+}
 
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 3
+interface ConvertedCoords {
+  lat: number;
+  lng: number;
+}
 
-  // 페이지네이션에 맞는 데이터 추출
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = dummyHospitalData.slice(indexOfFirstItem, indexOfLastItem)
+const Hospital = ({setMapData}: Props) => {
+  const [resHospital, setResHospital] = useState<HospitalData[]>([]);
 
-  // 페이지 변경 핸들러
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page)
+  const convertCoords = async (x: string, y: string): Promise<ConvertedCoords> => {
+    try {
+      const res = await axios.get(
+        `https://dapi.kakao.com/v2/local/geo/transcoord.json?x=${x}&y=${y}&input_coord=TM&output_coord=WGS84`,
+        {
+          headers: {
+            Authorization: `KakaoAK ${process.env.REACT_APP_KAKAO_REST_KEY}`,
+          },
+        }
+      )
+
+      return {
+        lat: parseFloat(res.data.documents[0].y),
+        lng: parseFloat(res.data.documents[0].x),
+      }
+    } catch(error) {
+      console.error("좌표 변환 오류: ", error)
+      return {lat: 0, lng: 0}
+    }
   }
 
-  
+  const resPharmacy = async (): Promise<void> => {
+    try {
+      const response = await axios.get(`http://openapi.seoul.go.kr:8088/70554d6e6e6861723932456779696a/json/LOCALDATA_020301/1/3/`);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get('http://openapi.seoul.go.kr:8088/70554d6e6e6861723932456779696a/xml/LOCALDATA_020301/1/10/')
-  
+      const data: HospitalData[] = response.data.LOCALDATA_020301.row;
+      setResHospital(data);
+
+      const convertedData: MapData[] = await Promise.all(
+        data.map(async (item: HospitalData): Promise<MapData> => {
+          const { lat, lng } = await convertCoords(item.X, item.Y);
+          return {
+            title: item.BPLCNM,
+            lat,
+            lng,
+          };
+        })
+      );
+
+      setMapData(convertedData);
+    } catch(error) {
+      console.error(error);
     }
-    fetchData()
-  }, [])
-
-
+  }
+  useEffect(() => {
+      resPharmacy();
+    }, [])
+    
   return (
-    <div className="flex flex-col h-full items-center justify-center p-6 bg-green-50 rounded-lg shadow-lg">
+    <div className="flex flex-col h-auto items-center justify-center p-6 rounded-lg shadow-lg">
       <div className="text-2xl font-semibold text-blue-600 mb-4">동물병원 목록</div>
-      <ul className="w-full space-y-4">
-        {currentItems.map((hospital) => (
-          <li key={hospital.id} className="p-4 bg-white rounded-lg shadow-md">
-            <h3 className="font-semibold text-xl text-blue-700">{hospital.name}</h3>
-            <p className="text-gray-700">{hospital.description}</p>
-          </li>
-        ))}
-      </ul>
-
-      {/* 페이지네이션 */}
-      <div className="flex gap-4 mt-6">
-        {Array.from({ length: Math.ceil(dummyHospitalData.length / itemsPerPage) }, (_, index) => (
-          <button
-            key={index + 1}
-            onClick={() => handlePageChange(index + 1)}
-            className={`px-4 py-2 rounded-lg ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-          >
-            {index + 1}
-          </button>
-        ))}
-      </div>
+        <ul className="w-full space-y-4">
+          {resHospital.map((hospital, index) => (
+            <li key={index} className="p-4 bg-white rounded-lg shadow-md">
+              <div className="font-semibold">{hospital.BPLCNM}</div> {/* 병원 이름 */}
+              <div>{hospital.RDNWHLADDR}</div> {/* 병원 주소 */}
+              <div>{hospital.SITETEL || '전화번호 정보 없음'}</div> {/* 전화번호 */}
+            </li>
+          ))}
+        </ul>
     </div>
   )
 }

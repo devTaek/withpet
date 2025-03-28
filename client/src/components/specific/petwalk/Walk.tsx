@@ -3,20 +3,21 @@ import { useEffect, useState } from 'react';
 
 interface WalkData {
   id: number;
-  name: string;
+  title: string;
   description: string;
   latitude: number;
   longitude: number;
 }
 
-const Walk = () => {
-  const [place, setPlace] = useState<WalkData[]>([]);
+interface walkDataProps {
+}
 
-
+const Walk: React.FC<walkDataProps> = () => {
 
   return (
-    <div className="flex flex-col h-full items-center rounded-lg">
-
+    <div className="flex flex-col h-auto items-center rounded-lg border">
+      <ul className="">
+      </ul>
     </div>
   );
 };
