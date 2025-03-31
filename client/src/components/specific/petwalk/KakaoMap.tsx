@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Map, MapMarker } from 'react-kakao-maps-sdk';
-import { MapData } from '../../../types/interfaces/walk';
 
 declare global {
   interface Window {
@@ -10,10 +9,21 @@ declare global {
 
 // walkData 프롭스 타입 설정 필요
 interface Props {
-  mapData: MapData[]
+  keyword: string,
+  selectedButton: string | null,
 }
 
-interface MarkerType {
+interface Location {
+  center: {
+    lat: number;
+    lng: number;
+  };
+  errMsg: string | null;
+  isLoading: boolean;
+  isPanto: boolean;
+}
+
+interface Marker {
   position: {
     lat: number;
     lng: number;
@@ -21,86 +31,112 @@ interface MarkerType {
   content: string;
 }
 
-const KakaoMap: React.FC<Props> = ({mapData}) => {
-  const { kakao } = window;
-  const [map, setMap] = useState<kakao.maps.Map | null>(null);
-  const [markers, setMarkers] = useState<MarkerType[]>([]);
-  const [info, setInfo] = useState<MarkerType | null>(null);
-  const [location, setLocation] = useState<{ lat: number; lng: number}>({
-    lat: 37.5665,
-    lng: 126.9780,
-  });
+const KakaoMap: React.FC<Props> = ({keyword, selectedButton}) => {
+  const mapRef = useRef<kakao.maps.Map>(null);
 
-  useEffect(() => {
-    if (!map) return;
+  const [map, setMap] = useState<kakao.maps.Map | null>();
+  const [location, setLocation] = useState<{lat: number; lng: number}>({
+    lat: 37.566826,
+    lng: 126.9786567
+  })    
+  const [markers, setMarkers] = useState<Marker[]>([]);
+  const [isInitialSearch, setIsInitialSearch] = useState(true); // ✅ 최초 검색 여부
+
+  const searchLocation = (query: string) => {
+    if(!map) return;
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    geocoder.addressSearch(query, (result, status) => {
+      if(status === kakao.maps.services.Status.OK) {
+        const newLocation = {
+          lat: Number(result[0].y),
+          lng: Number(result[0].x),
+        }
+
+        setLocation(newLocation);
+        map.setCenter(new kakao.maps.LatLng(newLocation.lat, newLocation.lng));
+        searchPlaces(newLocation.lat, newLocation.lng);
+      }
+    })
+  }
+
+  const searchPlaces = (lat: number, lng: number, adjustBounds: boolean = false) => {
+    if(!map) return;
     const ps = new kakao.maps.services.Places();
 
-    if(map) {
-      if(navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const lng = position.coords.longitude;
-          const lat = position.coords.latitude;
-
-          setLocation({lng, lat});
-          setTimeout(() => {
-            map.setCenter(new kakao.maps.LatLng(lat, lng)); // ✅ 약간의 지연 후 이동
-          }, 500);
-        })
-      }
+    const placesOptions = {
+      location: new kakao.maps.LatLng(lat, lng),
+      radius: 5000,
     }
-  }, [map]);
-
-
-    console.log(mapData)
-  let dummy_data = [
-    {
-      id: 1,
-      title: '첫번째',
-      lat: 37.5665,
-      lng: 126.9780,
-    },
-    {
-      id: 2,
-      title: '두번째',
-      lat: 37.5775,
-      lng: 126.9880,
-    },
-    {
-      id: 3,
-      title: '세번째',
-      lat: 37.5500,
-      lng: 126.9700,
-    },
-  ]
+    if(selectedButton === "hospital") {
+      ps.keywordSearch("동물병원", (data, status) => {
+        if(status === kakao.maps.services.Status.OK) {
+          const bounds = new kakao.maps.LatLngBounds();
+          let newMarkers:Marker[] = [];
+          data.forEach((place) => {
+            const lat = Number(place.y);
+            const lng = Number(place.x);
   
+            newMarkers.push({
+              position: {lat, lng},
+              content: place.place_name,
+            })
+  
+            bounds.extend(new kakao.maps.LatLng(lat, lng));
+          });
+  
+          setMarkers(newMarkers);
+          if (adjustBounds) {
+            map.setBounds(bounds);
+          }
+  
+        }
+      }, placesOptions);
+
+    }
+  }
+
+  useEffect(() => {
+    if(!map) return;
+    const center = map.getCenter();
+    searchPlaces(center.getLat(), center.getLng(), true);
+  }, [map, selectedButton])
+
+  useEffect(() => {
+    if(keyword) {
+      searchLocation(keyword);
+    }
+  }, [keyword])
 
   return (
     <Map
       id="map"
-      center={{
-        lat: location.lat,
-        lng: location.lng,
-      }}
-      
-      style={{
-        width: "50%",
-        height: "600px",
-      }}
+      center={{ lat: 37.566826, lng: 126.978656 }}
+      style={{width: "50%",height: "600px"}}
       level={3}
+      ref={mapRef}
       onCreate={setMap}
+      onDragEnd={(map) => {
+        const latlng = map.getCenter();
+        searchPlaces(latlng.getLat(), latlng.getLng(), false);
+      }}
     >
-      {dummy_data.map((data) => (
+      {markers.map((marker) => (
         <MapMarker
-          key={data.id}
-          position={{
-            lng: data.lng,
-            lat: data.lat
-          }}
+          key={`marker-${marker.content}-${marker.position.lat},${marker.position.lng}`}
+          position={marker.position}
+          // onClick={() => setInfo(marker)}
         >
+          {/* {info && info.content === marker.content && (
+            <div>
+              {marker.content}
+            </div>
+          )} */}
         </MapMarker>
       ))}
     </Map>
-  )
-}
+  );
+};
 
-export default KakaoMap
+
+export default KakaoMap;
