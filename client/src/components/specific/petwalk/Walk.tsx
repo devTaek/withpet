@@ -1,18 +1,10 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import React, { useEffect } from "react";
 
-interface WalkData {
-  id: number;
-  title: string;
-  description: string;
-  latitude: number;
-  longitude: number;
-}
+const Walk = () => {
 
-interface walkDataProps {
-}
-
-const Walk: React.FC<walkDataProps> = () => {
+  useEffect(() => {
+    
+  })
 
   return (
     <div className="flex flex-col h-auto items-center rounded-lg border">
