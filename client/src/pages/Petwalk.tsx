@@ -2,19 +2,17 @@ import { useState } from "react";
 import Img from "../assets/img";
 
 
-import Walk from "../components/specific/petwalk/Walk";
-import Hospital from "../components/specific/petwalk/Hospital";
 import KakaoMap from "../components/specific/petwalk/KakaoMap";
 
-import { HospitalData } from "../types/interfaces/walk";
+import { List } from "../types/interfaces/walk";
+import MapList from "../components/specific/petwalk/MapList";
 
 const Petwalk = () => {
   const [selectedButton, setSelectedButton] = useState<string>("산책로");
   const [searchInputValue, setSearchInputValue] = useState<string>('');
   const [keyword, setKeyword] = useState<string>('');
 
-  const [walkList, setWalkList] = useState()
-  const [hospitalList, setHospitalList] = useState<HospitalData[]>([]);
+  const [list, setList] = useState<List[]>([]);
 
   const handleCategoryClick = (buttonName: string) => {
     setSelectedButton(buttonName);
@@ -36,7 +34,11 @@ const Petwalk = () => {
 
       <div className="w-full h-full flex items-center justify-between">
       
-        <KakaoMap keyword={keyword} selectedButton={selectedButton} setHospitalList={setHospitalList} />
+        <KakaoMap
+          keyword={keyword}
+          selectedButton={selectedButton}
+          setList={setList}
+        />
 
         <div className="w-1/3  h-[calc(100vh-4rem)] mt-32 p-10 overflow-hidden">
           <div className="w-full font-black text-4xl p-2 text-center green:text-black">PETWALK</div>
@@ -65,8 +67,7 @@ const Petwalk = () => {
             <button onClick={() => setKeyword(searchInputValue)}>검색</button>
           </div>
 
-          {selectedButton === "산책로" && <Walk />}
-          {selectedButton === "동물병원" && <Hospital hospitalList={hospitalList} />}
+          {list && <MapList list={list}/>}
         </div>
 
         
