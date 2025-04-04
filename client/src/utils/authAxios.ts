@@ -5,7 +5,7 @@ import { getItem, setItem } from "./storage";
 const authAxios = axios.create();
 
 authAxios.defaults.withCredentials = true;
-authAxios.defaults.baseURL = 'http://localhost:5000/api';
+authAxios.defaults.baseURL = `${process.env.REACT_APP_SERVER_BASE_URL}/api`;
 
 // 전처리
 authAxios.interceptors.request.use(

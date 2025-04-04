@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import router from './routes'
+import router from './routes/index'
 
 import http from 'http'
 import { Server } from 'socket.io';

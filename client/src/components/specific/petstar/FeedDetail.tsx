@@ -19,7 +19,7 @@ const FeedDetail = ({ feed }: FeedDetailProps) => {
   useEffect(() => {
     const fetchFeedDetails = async () => {
       try {
-        const likesResponse = await axios.get(`http://localhost:5000/api/petstar/like/${feed.id}`);
+        const likesResponse = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/api/petstar/like/${feed.id}`);
         
         setLikeMembers(likesResponse.data.likeMemberIds);
       } catch(error) {

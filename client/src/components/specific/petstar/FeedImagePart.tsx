@@ -82,7 +82,7 @@ const FeedImagePart = ({ img }: FeedImagePartProps) => {
           {img.map((item, id) => (
             <div key={id} className="w-[100%] flex items-center justify-center flex-shrink-0">
               <img
-                src={`http://localhost:5000/api/petstar/${item}`}
+                src={`${process.env.REACT_APP_SERVER_BASE_URL}/api/petstar/${item}`}
                 alt=""
                 className="h-60 object-cover rounded-lg"
               />

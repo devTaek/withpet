@@ -6,7 +6,6 @@ import * as FeedController from '../controller/FeedController';
 import upload from '../middleware/multer';
 
 const router = Router();
-
 // 로그인
 router.post('/login', AuthContrller.login)
 router.post('/logout', AuthContrller.logout)

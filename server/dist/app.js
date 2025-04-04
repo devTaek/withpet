@@ -9,7 +9,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const path_1 = __importDefault(require("path"));
-const routes_1 = __importDefault(require("./routes"));
+const index_1 = __importDefault(require("./routes/index"));
 const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
 const FeedController_1 = require("./controller/FeedController");
@@ -26,7 +26,7 @@ app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.json()); // 이 미들웨어를 추가해야 req.body에 접근할 수 있어
 app.use(express_1.default.urlencoded({ extended: true }));
 // // 라우터 설정
-app.use('/api', routes_1.default);
+app.use('/api', index_1.default);
 app.use('/api/petstar', express_1.default.static(path_1.default.join(__dirname, '../uploads/feeds'))); // 서버 폴더 파일 공개
 // 웹소켓
 const server = http_1.default.createServer(app);

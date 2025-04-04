@@ -48,7 +48,7 @@ const Petstar = () => {
   useEffect(() => {
     const fetchFeeds = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/petstar');
+        const response = await axios.get(`${process.env.REACT_APP_SERVER_BASE_URL}/api/petstar`);
         
         dispatch(feedActions.setFeed(response.data.feeds));
       } catch (error) {
@@ -75,7 +75,7 @@ const Petstar = () => {
               <li key={id} className="transform transition duration-300 ease-in-out h-80 hover:scale-105">
                 <img
                   onClick={() => viewFeed(feed)}
-                  src={`http://localhost:5000/api/petstar/${feed.img && feed.img[0] ? feed.img[0] : ''}`}
+                  src={`${process.env.REACT_APP_SERVER_BASE_URL}/api/petstar/${feed.img && feed.img[0] ? feed.img[0] : ''}`}
                   alt=""
                   className="w-full h-full object-contain cursor-pointer"
                 />

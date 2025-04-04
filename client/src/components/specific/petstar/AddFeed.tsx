@@ -28,7 +28,7 @@ const AddFeed = ({setAddFeed}: {setAddFeed: React.Dispatch<React.SetStateAction<
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/petstar/add', formData, {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_BASE_URL}/api/petstar/add`, formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
