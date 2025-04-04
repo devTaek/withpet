@@ -36,6 +36,7 @@ const Petwalk = () => {
       
         <KakaoMap
           keyword={keyword}
+          setKeyword={setKeyword}
           selectedButton={selectedButton}
           setList={setList}
         />

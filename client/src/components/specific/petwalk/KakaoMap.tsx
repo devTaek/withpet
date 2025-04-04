@@ -13,6 +13,7 @@ declare global {
 // walkData 프롭스 타입 설정 필요
 interface Props {
   keyword?: string,
+  setKeyword: React.Dispatch<React.SetStateAction<string>>,
   selectedButton: string,
   setList: React.Dispatch<SetStateAction<List[]>>
 }
@@ -28,7 +29,7 @@ interface Location {
 
 const { kakao } = window;
 
-const KakaoMap: React.FC<Props> = ({keyword, selectedButton, setList}) => {
+const KakaoMap: React.FC<Props> = ({keyword, setKeyword, selectedButton, setList}) => {
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
   const [mapData, setMapData] = useState<List[]>([]);
   const [currentLocation, setCurrentLocation] = useState<Location>({
@@ -80,10 +81,14 @@ const KakaoMap: React.FC<Props> = ({keyword, selectedButton, setList}) => {
   }, []);
   
   // 병원 카테고리 주변 위치 검색하기
-  const searchPlaces = (category: string, keyword?: string) => {
+  const searchHospital = (category: string, keyword?: string) => {
     if(!map) return;
     const ps = new kakao.maps.services.Places();
-
+    const options = {
+      location: new kakao.maps.LatLng(mapCenter.lat, mapCenter.lng),
+      radius: 5000,
+      sort: kakao.maps.services.SortBy.ROADDISTANCE,
+    };
     if(keyword) {
       let searchData = keyword + ' ' + category
       ps.keywordSearch(
@@ -99,18 +104,17 @@ const KakaoMap: React.FC<Props> = ({keyword, selectedButton, setList}) => {
               phone: item.phone,
             }))
             setMapData(formattedData);
-            // setHospitalList(data);
+
+            const first = data[0];
+            setMapCenter({ lat: Number(first.y), lng: Number(first.x) });
           } else {
             console.error("검색에 실패하였습니다.");
           }
-        })
+        },
+        options,
+      )
+      setKeyword('');
     } else {
-      const options = {
-        location: new kakao.maps.LatLng(mapCenter.lat, mapCenter.lng),
-        radius: 5000,
-        sort: kakao.maps.services.SortBy.ROADDISTANCE,
-      };
-  
       ps.keywordSearch(
         category,
         (data: kakao.maps.services.PlacesSearchResultItem[], status: kakao.maps.services.Status) => {
@@ -142,7 +146,7 @@ const KakaoMap: React.FC<Props> = ({keyword, selectedButton, setList}) => {
 
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_WALK_API_BASE_URL}?serviceKey=${process.env.REACT_APP_WALK_ENCODING_API_KEY}&pageNo=1&numOfRows=10&mapX=${mapCenter.lng}&mapY=${mapCenter.lat}6&radius=5000&listYN=Y&arrange=A&contentTypeId=12&MobileOS=ETC&MobileApp=AppTest&_type=json`
+        `${process.env.REACT_APP_WALK_API_BASE_URL}?serviceKey=${process.env.REACT_APP_WALK_ENCODING_API_KEY}&pageNo=1&numOfRows=1&mapX=${mapCenter.lng}&mapY=${mapCenter.lat}6&radius=5000&listYN=Y&arrange=A&contentTypeId=12&MobileOS=ETC&MobileApp=AppTest&_type=json`
       )
       
       let data = response.data.response.body.items.item || [];
@@ -167,14 +171,14 @@ const KakaoMap: React.FC<Props> = ({keyword, selectedButton, setList}) => {
       if(selectedButton === "산책로") {
         searchWalk();
       } else if(selectedButton === "동물병원") {
-        searchPlaces(selectedButton, keyword);
+        searchHospital(selectedButton, keyword);
       }
   }, [selectedButton, keyword, mapCenter]);
 
   return (
     <>
       <Map
-        center={currentLocation.center}
+        center={mapCenter}
         style={{width: '66.66%', height: '600px'}}
         level={3}
         onCreate={setMap} // ✅ 여기에 추가
