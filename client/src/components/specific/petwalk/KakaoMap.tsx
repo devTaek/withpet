@@ -15,7 +15,9 @@ interface Props {
   keyword?: string,
   setKeyword: React.Dispatch<React.SetStateAction<string>>,
   selectedButton: string,
-  setList: React.Dispatch<SetStateAction<List[]>>
+  setList: React.Dispatch<SetStateAction<List[]>>,
+  selectedPlace: List | null,
+  setSelectedPlace: React.Dispatch<SetStateAction<List | null>>
 }
 
 interface Location {
@@ -29,7 +31,7 @@ interface Location {
 
 const { kakao } = window;
 
-const KakaoMap: React.FC<Props> = ({keyword, setKeyword, selectedButton, setList}) => {
+const KakaoMap: React.FC<Props> = ({keyword, setKeyword, selectedButton, setList, selectedPlace, setSelectedPlace}) => {
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
   const [mapData, setMapData] = useState<List[]>([]);
   const [currentLocation, setCurrentLocation] = useState<Location>({
@@ -42,7 +44,7 @@ const KakaoMap: React.FC<Props> = ({keyword, setKeyword, selectedButton, setList
   })
   
   const [mapCenter, setMapCenter] = useState({lat: 33.450701, lng: 126.570667});
-
+  const [selectMarker, setSelectMarker] = useState<List | null>(null);
 
   // 현재 사용자 위치 (geolocation)
   useEffect(() => {
@@ -209,7 +211,11 @@ const KakaoMap: React.FC<Props> = ({keyword, setKeyword, selectedButton, setList
                 height: 35,
               }
             }}
+          onClick={() => setSelectedPlace(data)}
           >
+            {selectedPlace?.place_name === data.place_name && (
+              <div style={{color: 'red'}}>{data.place_name}</div>
+            )}
           </MapMarker>
         ))}
       </Map>

@@ -13,6 +13,7 @@ const Petwalk = () => {
   const [keyword, setKeyword] = useState<string>('');
 
   const [list, setList] = useState<List[]>([]);
+  const [selectedPlace, setSelectedPlace] = useState<List | null>(null);
 
   const handleCategoryClick = (buttonName: string) => {
     setSelectedButton(buttonName);
@@ -39,6 +40,8 @@ const Petwalk = () => {
           setKeyword={setKeyword}
           selectedButton={selectedButton}
           setList={setList}
+          selectedPlace={selectedPlace}
+          setSelectedPlace={setSelectedPlace}
         />
 
         <div className="w-1/3  h-[calc(100vh-4rem)] mt-32 p-10 overflow-hidden">
@@ -68,7 +71,7 @@ const Petwalk = () => {
             <button onClick={() => setKeyword(searchInputValue)}>검색</button>
           </div>
 
-          {list && <MapList list={list}/>}
+          {list && <MapList list={list} selectedPlace={selectedPlace} setSelectedPlace={setSelectedPlace} />}
         </div>
 
         
