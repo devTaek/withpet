@@ -3,8 +3,11 @@ import { useForm } from 'react-hook-form';
 
 import { RegisterFormData } from '../../types/interfaces/user';
 
+interface Props {
+  setShowComponent: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-const Register = () => {
+const Register = ({setShowComponent}: Props) => {
 
   const { register, watch, handleSubmit, formState: { errors } } = useForm<RegisterFormData>();
 
@@ -19,6 +22,7 @@ const Register = () => {
         phoneNumber: data.phoneNumber,
       })
 
+      setShowComponent(false);
     } catch(error: any) {
       console.error(error);
     }
@@ -35,15 +39,12 @@ const Register = () => {
             placeholder='아이디'
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             {...register("userId", {
-              required: "아이디를 입력하세요",
+              required: "아이디를 입력하세요.",
               pattern: {
-                value: /^[a-zA-Z]+$/,
-                message: "아이디는 영문만 가능합니다."
+                value: /^[a-z0-9]{4,12}$/,
+                message: "아이디는 소문자와 숫자 조합으로 4~12자여야 합니다."
               },
-              minLength: {
-              value: 7,
-              message: "아이디는 최소 7자 이상이어야합니다."
-            } })}
+            })}
           />
           <span className="text-red-500 text-sm mt-1">{errors?.userId?.message}</span>
           <input 
@@ -51,10 +52,10 @@ const Register = () => {
             placeholder='비밀번호'
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             {...register("password", {
-              required: true,
+              required: "비밀번호를 입력하세요.",
               pattern: {
-                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
-                message: "영문 대소문자와 숫자를 포함해야 합니다."
+                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{4,12}$/,
+                message: "비밀번호는 소문자, 대문자, 특수문자를 포함한 4~12자여야 합니다."
               }
             })}
           />
@@ -64,7 +65,7 @@ const Register = () => {
             placeholder='비밀번호 확인'
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             {...register("password_confirm", {
-              required: "비밀번호 확인을 입력하세요",
+              required: "비밀번호를 확인하세요.",
               validate: (value) => value === watch("password") || "비밀번호가 일치하지 않습니다."
             })}
           />
@@ -73,32 +74,34 @@ const Register = () => {
             type="text" 
             placeholder='이름'
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            {...register("name", { required: true })}
+            {...register("name", { required: "이름을 입력하세요." })}
           />
+          <span className="text-red-500 text-sm">{errors?.name?.message}</span>
           <input 
-            type="email" // 이메일 타입으로 변경
+            type="email"
             placeholder='이메일'
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             {...register("email", {
-              required: "이메일을 입력하세요",
+              required: "이메일을 입력하세요.",
               pattern: {
                 value: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, // 일반 이메일 형식
-                message: "이메일 형식에 맞춰주세요"
+                message: "올바른 이메일 형식을 입력해주세요."
               }
             })}
           />
+          <span className="text-red-500 text-sm">{errors?.email?.message}</span>
           <input 
-            type="text" // 이메일 타입으로 변경
+            type="text"
             placeholder='주소'
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            {...register("address", { required: true })}
+            {...register("address", { required: "주소를 입력하세요." })}
           />
-          <span className="text-red-500 text-sm mt-1">{errors?.email?.message}</span>
+          <span className="text-red-500 text-sm mt-1">{errors?.address?.message}</span>
             <input 
               type="text" 
               placeholder='핸드폰 번호'
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              {...register("phoneNumber", { required: true })}
+              {...register("phoneNumber", { required: "핸드폰 번호를 입력하세요." })}
             />
           <button type='submit' className="w-full bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition duration-300">회원가입</button>
         </form>

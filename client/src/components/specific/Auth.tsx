@@ -17,7 +17,7 @@ const Auth: React.FC<AuthProps> = ({onClose}) => {
       {isModalOpen &&
         <Modal onCloseBtn={onClose}>
           {showComponent
-            ? <Register />
+            ? <Register setShowComponent={setShowComponent} />
             : <Login setShowComponent={setShowComponent}/>
           }
         </Modal>
