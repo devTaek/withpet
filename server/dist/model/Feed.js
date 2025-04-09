@@ -90,7 +90,7 @@ const selectFeedComments = (feedId, cb) => {
       c.member_id,
       c.comment,
       c.created_at
-    FROM commentDB AS c
+    FROM feedCommentDB AS c
     WHERE c.feed_id = ?
   `;
     conn.query(sql, [feedId], (err, result) => {
@@ -104,7 +104,7 @@ const selectFeedComments = (feedId, cb) => {
 exports.selectFeedComments = selectFeedComments;
 const insertFeedComment = (memberId, feedId, comment, cb) => {
     const sql = `
-    INSERT INTO commentDB (feed_id, member_id, comment) VALUES (?, ?, ?);
+    INSERT INTO feedCommentDB (feed_id, member_id, comment) VALUES (?, ?, ?);
   `;
     conn.query(sql, [feedId, memberId, comment], (err, result) => {
         if (err) {
@@ -117,7 +117,7 @@ const insertFeedComment = (memberId, feedId, comment, cb) => {
 exports.insertFeedComment = insertFeedComment;
 const deleteFeedComment = (commentId, feedId, memberId, cb) => {
     const sql = `
-    DELETE FROM commentDB WHERE id =? AND feed_id = ? AND member_id = ?;
+    DELETE FROM feedCommentDB WHERE id =? AND feed_id = ? AND member_id = ?;
   `;
     conn.query(sql, [commentId, feedId, memberId], (err, result) => {
         if (err) {
@@ -131,7 +131,7 @@ exports.deleteFeedComment = deleteFeedComment;
 const selectFeedLike = (feedId, cb) => {
     const sql = `
   SELECT member_id
-  FROM likeDB
+  FROM feedLikeDB
   WHERE feed_id = ?;
   `;
     conn.query(sql, [feedId], (err, result) => {
@@ -146,7 +146,7 @@ const selectFeedLike = (feedId, cb) => {
 exports.selectFeedLike = selectFeedLike;
 const insertFeedLike = (memberId, feedId, cb) => {
     const sql = `
-    INSERT INTO likeDB (member_id, feed_id) VALUES (?, ?);
+    INSERT INTO feedLikeDB (member_id, feed_id) VALUES (?, ?);
   `;
     conn.query(sql, [memberId, feedId], (err, result) => {
         if (err) {
@@ -159,7 +159,7 @@ const insertFeedLike = (memberId, feedId, cb) => {
 exports.insertFeedLike = insertFeedLike;
 const deleteFeedLike = (memberId, feedId, cb) => {
     const sql = `
-    DELETE FROM likeDB WHERE member_id = ? AND feed_id = ?;
+    DELETE FROM feedLikeDB WHERE member_id = ? AND feed_id = ?;
   `;
     conn.query(sql, [memberId, feedId], (err, result) => {
         if (err) {
