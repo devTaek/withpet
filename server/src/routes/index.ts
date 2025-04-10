@@ -23,7 +23,7 @@ router.post('/register-pet', UserController.verifyAccessToken, UserController.re
 router.patch('/update-user', UserController.verifyAccessToken, UserController.updateUser);
 router.patch('/update-pet', UserController.verifyAccessToken, UserController.updatePet);
 
-router.delete('/delete', UserController.verifyAccessToken, UserController.deleteUser)
+router.delete('/delete-user', UserController.verifyAccessToken, UserController.deleteUser)
 
 
 /* MyStar */

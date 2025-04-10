@@ -29,6 +29,7 @@ const userStateSlice = createSlice({
       }
       setItem('user', state.user);
     },
+    
     registerPet(state, action: PayloadAction<{pet: PetInfo}>) {
       const newPet = action.payload.pet;
       state.user.pet = [...state.user.pet, newPet];

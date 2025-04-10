@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { insert, insertPet, updateUserInfo, updatePetInfo } from '../model/User'
+import { insert, insertPet, updateUserInfo, updatePetInfo, deleteUserInfo } from '../model/User'
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv'
@@ -181,5 +181,13 @@ export const updatePet = (req: Request, res: Response): void => {
 
 /** 회원 탈퇴 (회원정보 삭제) */
 export const deleteUser = (req: Request, res: Response): void => {
-  // const id = req.body;
+  const {userId} = req.body;
+
+  deleteUserInfo(userId, (result: any) => {
+    if(!result) {
+      return res.status(401).json({message: "회원정보 삭제 실패!"});
+    }
+
+    res.status(200).json({message: "회원정보 삭제 성공!"});
+  })
 }

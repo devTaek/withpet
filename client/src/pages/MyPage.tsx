@@ -10,9 +10,12 @@ import { PetInfo } from '../types/interfaces/user';
 import EditUser from '../components/specific/mypage/EditUser';
 import AddPet from '../components/specific/mypage/AddPet';
 import EditPet from '../components/specific/mypage/EditPet';
+import { useDispatch } from 'react-redux';
+import { authActions } from '../redux/slice/auth';
 
 const MyPage = () => {
   const user = getItem('user')
+  const dispatch = useDispatch();
 
   const [ isEditingUser, setIsEditingUser ] = useState(false);
   const [ isEditPet, setIsEditPet ] = useState<{mode: 'edit' | 'add' | ''}>({mode: ''});

@@ -164,11 +164,12 @@ export const updatePetInfo = (
 }
 
 // 회원정보 삭제
-export const deleteUser = (
-  id: string,
+export const deleteUserInfo = (
+  userId: string,
+  cb: (result: any) => void
 ) => {
-  const sql = `DELETE FROM userDB WHERE id = ?;`
-  conn.query(sql, [id], (err, result) => {
+  const sql = `DELETE FROM userDB WHERE user_id = ?;`
+  conn.query(sql, [userId], (err, result) => {
     if(err) throw err;
     console.log('회원탈퇴 완료.')
   })
