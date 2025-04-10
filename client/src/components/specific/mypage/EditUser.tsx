@@ -62,13 +62,13 @@ export const EditUser: React.FC<EditUserInfoProps> = ({setIsEditingUser, user}) 
   }
 
   return (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center space-y-4">
-        <div className="flex flex-col space-y-4">
+    <div className='flex flex-col'>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center space-y-4 mb-2">
+        <div className="flex flex-col space-y-4 mb-10">
           {/* 사용자 사진 */}
           <div className="w-32 h-32">
             <img
-              src=""
+              // src={`${process.env.REACT_APP_SERVER_BASE_URL}/api/mypage/#}`}
               alt="User"
               className="w-full h-auto object-cover rounded-lg border"
             />
@@ -134,8 +134,8 @@ export const EditUser: React.FC<EditUserInfoProps> = ({setIsEditingUser, user}) 
         </div>
         <button type='submit' className="w-full bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600 transition duration-300">저장하기</button>
       </form>
-        <button type='button' className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition duration-300" onClick={handleUserDeleteClick}>탈퇴하기</button>
-    </>
+      <button type='button' className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition duration-300" onClick={handleUserDeleteClick}>탈퇴하기</button>
+    </div>
   );
 };
 

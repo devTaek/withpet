@@ -34,7 +34,6 @@ const MyPage = () => {
     }
       setIsEditPet({ mode });
   };
-
   return (
     <div className="h-[calc(100vh-4rem)] mt-16 flex flex-col md:flex-row items-center justify-start m-10 gap-10 px-6">
 
