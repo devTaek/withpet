@@ -24,7 +24,7 @@ const Petwalk = () => {
   }
 
   return (
-    <div className="flex flex-col h-full mt-16  items-center flex-grow p-10 gap-10">
+    <div className="flex flex-col h-full mt-16 items-center flex-grow p-10 gap-10">
       <div className="w-full  h-[calc(100vh-8rem)]">
         <img
           src={Img.Walk.img1}
@@ -33,7 +33,7 @@ const Petwalk = () => {
         />
       </div>
 
-      <div className="w-full h-full flex items-center justify-between">
+      <div className="w-full h-full lg:h-[calc(100vh-4rem)] flex flex-col lg:flex-row items-center justify-between">
       
         <KakaoMap
           keyword={keyword}
@@ -44,7 +44,7 @@ const Petwalk = () => {
           setSelectedPlace={setSelectedPlace}
         />
 
-        <div className="w-1/3  h-[calc(100vh-4rem)] mt-32 p-10 overflow-hidden">
+        <div className="w-full h-full lg:w-1/3 p-10 ">
           <div className="w-full font-black text-4xl p-2 text-center green:text-black">PETWALK</div>
 
           <div className="flex gap-2 items-center justify-center">

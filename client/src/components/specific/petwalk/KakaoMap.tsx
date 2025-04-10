@@ -181,7 +181,7 @@ const KakaoMap: React.FC<Props> = ({keyword, setKeyword, selectedButton, setList
     <>
       <Map
         center={mapCenter}
-        style={{width: '66.66%', height: '600px'}}
+        className="w-full h-[500px] lg:h-[calc(100vh-4rem)] rounded-lg"
         level={3}
         onCreate={setMap} // ✅ 여기에 추가
         onDragEnd={(map) => {
